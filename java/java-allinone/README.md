@@ -16,7 +16,10 @@ limitations under the License.
 
 ## What goes in this directory?
 
-This directory contains the Java sub-projects of K2.
+This directory contains the Java code, tests, and examples directories for the early implementation
+of K2 in Java.
+
+This code will be refactored and moved to separate directorys as the new K2 structure is built.
 
 ## Hacking on the Java implementation
 

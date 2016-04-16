@@ -88,7 +88,7 @@ protoBuf {
   // Where are the protos
   sourceSets {
     proto {
-      srcDir = '../protos'
+      srcDir = '../../protos'
     }
   }
 
