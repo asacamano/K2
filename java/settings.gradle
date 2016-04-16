@@ -1,6 +1,6 @@
 // K2 Crypto Library Java Settings File
 //
-// Copyright 2016 Google. Inc.
+// Copyright 2014 Google. Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-include 'examples:sqlite-storage'
-include 'examples:storage-usage'
-include ':protos-java'
-project(':protos-java').projectDir = new File('../protos-java')
-
-rootProject.name = 'k2-allinone'
+include ':protos-java', ':java-allinone'

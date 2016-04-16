@@ -14,9 +14,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-include 'examples:sqlite-storage'
-include 'examples:storage-usage'
-include ':protos-java'
-project(':protos-java').projectDir = new File('../protos-java')
-
-rootProject.name = 'k2-allinone'
+rootProject.name = 'protos-java'

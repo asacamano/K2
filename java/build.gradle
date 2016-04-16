@@ -1,6 +1,6 @@
 // K2 Crypto Library Java Build File
 //
-// Copyright 2014 Google. Inc.
+// Copyright 2016 Google. Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,20 +22,25 @@ buildscript {
   }
 }
 
-apply plugin: 'eclipse'
-apply plugin: 'java'
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
 
-// Build a manifest file containing info about the library
-version = 'DEVELOPMENT'
-jar {
-  archiveName = "k2.jar"
-  manifest {
-    attributes 'Implementation-Title': 'K2 Crypto Library', 'Implementation-Version': version
+  // The standard group for all projects
+  group = 'com.google.k2'
+
+  // Java 1.5
+  sourceCompatibility = 1.5
+  targetCompatibility = 1.5
+
+  // Use mavenCentral for project dependencies
+  repositories {
+    mavenCentral()
+  }
+  // All sub-projects will depend on the root project
+  dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.10.19'
   }
 }
 
-dependencies {
-  compile project(':protos-java')
-  compile 'com.google.code.gson:gson:2.6.2'
-  compile 'log4j:log4j:1.2.17'
-}
