@@ -28,10 +28,13 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import javax.crypto.Cipher;
 
 /**
  * Tests for AESkeyVersion class
@@ -39,28 +42,35 @@ import java.io.ByteArrayOutputStream;
  * @author John Maheswaran (maheswaran@google.com)
  */
 public class AESKeyVersionTest {
-  
+
+  @Before
+  public void ensureUnlimitedJce() throws Exception {
+	if (Cipher.getMaxAllowedKeyLength("AES") <= 128) {
+	  throw new IllegalStateException("Please install the unlimited strength JCE policy files: "
+        + "http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html");
+	}
+  }
   /**
-   * Tests that the AESKeyVersion correctly saves to and loads from proto data. 
+   * Tests that the AESKeyVersion correctly saves to and loads from proto data.
    */
   @Test
   public void testSaveLoad()
       throws BuilderException, InvalidProtocolBufferException {
-    
+
     // Just generate a key version (use non-defaults where possible)
     AESKeyVersion toSave = new AESKeyVersion.Builder().mode(Mode.ECB).build();
     // Dump its proto data bytes
     ByteString bytes = toSave.buildData().build().toByteString();
-    
+
     // Create a proto extension registry and register AES extension
     // (this will normally be done by KeyVersionRegistry)
     ExtensionRegistry registry = ExtensionRegistry.newInstance();
     AesKeyVersionProto.registerAllExtensions(registry);
-    
+
     // Read the proto
     AESKeyVersion loaded = new AESKeyVersion.Builder()
         .withData(KeyVersionData.parseFrom(bytes, registry), registry).build();
-    
+
     // Make sure the data is the same at a low-level (nothing gets lost)
     assertEquals(bytes, loaded.buildData().build().toByteString());
 
@@ -69,7 +79,7 @@ public class AESKeyVersionTest {
         toSave.getKeyVersionMatter(), loaded.getKeyVersionMatter());
     assertEquals(toSave.getAlgModePadding(), loaded.getAlgModePadding());
   }
-  
+
   /**
    * This tests the encryption and decryption methods of the AESKeyVersion class.
    *
