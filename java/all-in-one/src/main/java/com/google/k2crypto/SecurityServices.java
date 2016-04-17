@@ -22,7 +22,7 @@ import java.util.HashSet;
  *
  * @author John Maheswaran (maheswaran@google.com)
  */
-public class SecurityServices { 
+public class SecurityServices {
   /**
    * function that maps from ONE security services to ONE algorithm
    *
@@ -56,8 +56,8 @@ public class SecurityServices {
    *         properties
    * @throws K2Exception
    */
-  public static HashSet<Algorithm> getAlgorithms(SecService secService1,
-      SecService secService2) throws K2Exception {
+  public static HashSet<Algorithm> getAlgorithms(SecService secService1, SecService secService2)
+      throws K2Exception {
     // check that the security services are different
     if (secService1 == secService2) {
       // throw an exception if they are the same
@@ -112,8 +112,8 @@ public class SecurityServices {
    *         properties
    * @throws K2Exception
    */
-  public static HashSet<Algorithm> getAlgorithms(SecService secService1,
-      SecService secService2, SecService secService3) throws K2Exception {
+  public static HashSet<Algorithm> getAlgorithms(SecService secService1, SecService secService2,
+      SecService secService3) throws K2Exception {
     // check that the security services are different
     if (secService1 == secService2 || secService1 == secService3 || secService2 == secService3) {
       // throw an exception if any of them are the same
@@ -164,8 +164,8 @@ public class SecurityServices {
    *         properties
    * @throws K2Exception
    */
-  public static HashSet<Algorithm> getAlgorithms(SecService secService1,
-      SecService secService2, SecService secService3, SecService secService4) throws K2Exception {
+  public static HashSet<Algorithm> getAlgorithms(SecService secService1, SecService secService2,
+      SecService secService3, SecService secService4) throws K2Exception {
     // check that the security services are different
     if (secService1 == secService2 || secService1 == secService3 || secService1 == secService4
         || secService2 == secService3 || secService2 == secService4 || secService3 == secService4) {

@@ -24,17 +24,18 @@ import com.google.k2crypto.exceptions.EncryptionException;
 import com.google.k2crypto.keyversions.AESKeyVersion.Mode;
 import com.google.k2crypto.keyversions.AESKeyVersion.Padding;
 import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionData;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.ExtensionRegistry;
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import javax.crypto.Cipher;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Tests for AESkeyVersion class
@@ -45,17 +46,17 @@ public class AESKeyVersionTest {
 
   @Before
   public void ensureUnlimitedJce() throws Exception {
-	if (Cipher.getMaxAllowedKeyLength("AES") <= 128) {
-	  throw new IllegalStateException("Please install the unlimited strength JCE policy files: "
-        + "http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html");
-	}
+    if (Cipher.getMaxAllowedKeyLength("AES") <= 128) {
+      throw new IllegalStateException("Please install the unlimited strength JCE policy files: "
+          + "http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html");
+    }
   }
+
   /**
    * Tests that the AESKeyVersion correctly saves to and loads from proto data.
    */
   @Test
-  public void testSaveLoad()
-      throws BuilderException, InvalidProtocolBufferException {
+  public void testSaveLoad() throws BuilderException, InvalidProtocolBufferException {
 
     // Just generate a key version (use non-defaults where possible)
     AESKeyVersion toSave = new AESKeyVersion.Builder().mode(Mode.ECB).build();
@@ -75,8 +76,7 @@ public class AESKeyVersionTest {
     assertEquals(bytes, loaded.buildData().build().toByteString());
 
     // Make sure the important fields are all the same
-    assertArrayEquals(
-        toSave.getKeyVersionMatter(), loaded.getKeyVersionMatter());
+    assertArrayEquals(toSave.getKeyVersionMatter(), loaded.getKeyVersionMatter());
     assertEquals(toSave.getAlgModePadding(), loaded.getAlgModePadding());
   }
 
@@ -88,12 +88,11 @@ public class AESKeyVersionTest {
    * @throws DecryptionException
    */
   @Test
-  public void testEncryptDecrypt() throws BuilderException, EncryptionException,
-      DecryptionException {
+  public void testEncryptDecrypt()
+      throws BuilderException, EncryptionException, DecryptionException {
 
     // create AES key
-    AESKeyVersion keyVersion =
-        new AESKeyVersion.Builder().keyVersionLengthInBytes(16).build();
+    AESKeyVersion keyVersion = new AESKeyVersion.Builder().keyVersionLengthInBytes(16).build();
     // call the method to test encrypting and decrypting strings using this key version
     testEncryptDecryptKeyVersion(keyVersion);
   }
@@ -107,11 +106,10 @@ public class AESKeyVersionTest {
    * @throws DecryptionException
    */
   @Test
-  public void testLoadkeyVersionMatter() throws BuilderException, EncryptionException,
-      DecryptionException {
+  public void testLoadkeyVersionMatter()
+      throws BuilderException, EncryptionException, DecryptionException {
     // create AES key
-    AESKeyVersion key1 =
-        new AESKeyVersion.Builder().keyVersionLengthInBytes(16).build();
+    AESKeyVersion key1 = new AESKeyVersion.Builder().keyVersionLengthInBytes(16).build();
     // obtain the raw keyVersion matter
     byte[] keyVersionMatter = getkeyVersionMatter(key1);
     // obtain the raw initialization vector for first key
@@ -151,8 +149,8 @@ public class AESKeyVersionTest {
    * @throws EncryptionException
    */
   @Test
-  public void testAESKeyVersionStream() throws BuilderException, EncryptionException,
-      DecryptionException {
+  public void testAESKeyVersionStream()
+      throws BuilderException, EncryptionException, DecryptionException {
     AESKeyVersion keyversion;
 
     /*
@@ -160,8 +158,7 @@ public class AESKeyVersionTest {
      */
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-      keyversion = new AESKeyVersion.Builder()
-          .keyVersionLengthInBytes(keyVersionLength)
+      keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
           .padding(Padding.PKCS5).build();
       testEncryptDecryptStream(keyversion);
 
@@ -173,8 +170,7 @@ public class AESKeyVersionTest {
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       for (Mode mode : Mode.values()) {
         // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-        keyversion = new AESKeyVersion.Builder()
-            .keyVersionLengthInBytes(keyVersionLength)
+        keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
             .padding(Padding.PKCS5).mode(mode).build();
         testEncryptDecryptStream(keyversion);
       }
@@ -188,8 +184,8 @@ public class AESKeyVersionTest {
    * @throws EncryptionException
    * @throws DecryptionException
    */
-  private void testEncryptDecryptStream(AESKeyVersion keyVersion) throws EncryptionException,
-      DecryptionException {
+  private void testEncryptDecryptStream(AESKeyVersion keyVersion)
+      throws EncryptionException, DecryptionException {
     /*
      *test the encryption decryption STREAMS. Loop over an array of test input Strings to encrypt
      * and the decrypt
@@ -228,8 +224,8 @@ public class AESKeyVersionTest {
    * @throws DecryptionException
    */
   @Test
-  public void testAESKeyVersionBuilder() throws BuilderException, EncryptionException,
-      DecryptionException {
+  public void testAESKeyVersionBuilder()
+      throws BuilderException, EncryptionException, DecryptionException {
 
     // test using the default keyVersion builder
     AESKeyVersion keyversion = new AESKeyVersion.Builder().build();
@@ -240,8 +236,7 @@ public class AESKeyVersionTest {
      */
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-      keyversion = new AESKeyVersion.Builder()
-          .keyVersionLengthInBytes(keyVersionLength)
+      keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
           .padding(Padding.PKCS5).build();
       testEncryptDecryptKeyVersion(keyversion);
 
@@ -253,8 +248,7 @@ public class AESKeyVersionTest {
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       for (Mode mode : Mode.values()) {
         // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-        keyversion = new AESKeyVersion.Builder()
-            .keyVersionLengthInBytes(keyVersionLength)
+        keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
             .padding(Padding.PKCS5).mode(mode).build();
         testEncryptDecryptKeyVersion(keyversion);
       }
@@ -271,8 +265,8 @@ public class AESKeyVersionTest {
    * @throws EncryptionException
    * @throws DecryptionException
    */
-  public void testEncryptDecryptKeyVersion(AESKeyVersion keyVersion) throws EncryptionException,
-      DecryptionException {
+  public void testEncryptDecryptKeyVersion(AESKeyVersion keyVersion)
+      throws EncryptionException, DecryptionException {
 
     // test text string that we will encrypt and then decrypt
     String testinput = "weak";

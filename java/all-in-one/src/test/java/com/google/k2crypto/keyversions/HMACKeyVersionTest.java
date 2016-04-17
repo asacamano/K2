@@ -7,11 +7,12 @@ import static org.junit.Assert.assertTrue;
 import com.google.k2crypto.exceptions.BuilderException;
 import com.google.k2crypto.exceptions.EncryptionException;
 import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionData;
+
+import org.junit.Test;
+
 import com.google.protobuf.ByteString;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import org.junit.Test;
 
 /**
  * Tests for HMACKeyVersion class
@@ -21,36 +22,34 @@ import org.junit.Test;
 public class HMACKeyVersionTest {
 
   /**
-   * Tests that the HMACKeyVersion correctly saves to and loads from proto data. 
+   * Tests that the HMACKeyVersion correctly saves to and loads from proto data.
    */
   @Test
-  public void testSaveLoad()
-      throws BuilderException, InvalidProtocolBufferException {
-    
+  public void testSaveLoad() throws BuilderException, InvalidProtocolBufferException {
+
     // Just generate a key version (use non-defaults where possible)
-    HMACKeyVersion toSave = new HMACKeyVersion.Builder()
-        .algorithm(HMACKeyVersion.HMAC_SHA512).build();
+    HMACKeyVersion toSave =
+        new HMACKeyVersion.Builder().algorithm(HMACKeyVersion.HMAC_SHA512).build();
     // Dump its proto data bytes
     ByteString bytes = toSave.buildData().build().toByteString();
-    
+
     // Create a proto extension registry and register HMAC extension
     // (this will normally be done by KeyVersionRegistry)
     ExtensionRegistry registry = ExtensionRegistry.newInstance();
     HmacKeyVersionProto.registerAllExtensions(registry);
-    
+
     // Read the proto
     HMACKeyVersion loaded = new HMACKeyVersion.Builder()
         .withData(KeyVersionData.parseFrom(bytes, registry), registry).build();
-    
+
     // Make sure the data is the same at a low-level (nothing gets lost)
     assertEquals(bytes, loaded.buildData().build().toByteString());
 
     // Make sure the important fields are all the same
-    assertArrayEquals(
-        toSave.getKeyVersionMatter(), loaded.getKeyVersionMatter());
+    assertArrayEquals(toSave.getKeyVersionMatter(), loaded.getKeyVersionMatter());
     assertEquals(toSave.getAlgorithm(), loaded.getAlgorithm());
   }
-  
+
   /**
    * Tests the HMACKeyVersion functionality. Generates an HMAC key version, uses it to generate
    * HMAC, then generates a second HMAC key version using the raw byte representation of the first
@@ -75,8 +74,7 @@ public class HMACKeyVersionTest {
       byte[] keyVersionMatter = keyversion.getKeyVersionMatter();
 
       // create second keyversion from the raw keyversion matter
-      HMACKeyVersion keyversion2 =
-          HMACKeyVersion.generateHMAC(algorithm, keyVersionMatter);
+      HMACKeyVersion keyversion2 = HMACKeyVersion.generateHMAC(algorithm, keyVersionMatter);
 
       // use the original keyversion to verify the HMAC
       assertTrue(keyversion.verifyHMAC(hmac, message.getBytes()));

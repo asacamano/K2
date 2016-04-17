@@ -30,7 +30,7 @@ public class EncryptionException extends K2Exception {
    *
    * @param message the detail message.
    */
-  public EncryptionException (String message) {
+  public EncryptionException(String message) {
     super(message);
   }
 
@@ -39,7 +39,7 @@ public class EncryptionException extends K2Exception {
    * @param message the detail message.
    * @param cause the cause of this exception.
    */
-  public EncryptionException (String message, Throwable cause) {
+  public EncryptionException(String message, Throwable cause) {
     super(message, cause);
   }
 
@@ -47,7 +47,7 @@ public class EncryptionException extends K2Exception {
    * Constructs a new EncryptionException  with the specified cause.
    * @param cause the cause of this exception.
    */
-  public EncryptionException (Throwable cause) {
+  public EncryptionException(Throwable cause) {
     super(cause);
   }
 }

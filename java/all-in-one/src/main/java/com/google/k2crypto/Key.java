@@ -23,12 +23,13 @@ import com.google.k2crypto.exceptions.UnregisteredKeyVersionException;
 import com.google.k2crypto.keyversions.KeyVersion;
 import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionData;
 import com.google.k2crypto.keyversions.KeyVersionRegistry;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.ExtensionRegistry;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * This class represents a Key in K2. It holds a list of KeyVersions and a
@@ -90,8 +91,7 @@ public class Key {
     // Retain the core
     if (!data.hasCore()) {
       // Core field is required
-      throw new InvalidKeyDataException(
-          InvalidKeyDataException.Reason.PROTO_PARSE, null);
+      throw new InvalidKeyDataException(InvalidKeyDataException.Reason.PROTO_PARSE, null);
     }
     coreBytes = data.getCore();
 
@@ -101,8 +101,7 @@ public class Key {
     try {
       core = KeyCore.parseFrom(coreBytes, protoRegistry);
     } catch (InvalidProtocolBufferException ex) {
-      throw new InvalidKeyDataException(
-          InvalidKeyDataException.Reason.PROTO_PARSE, ex);
+      throw new InvalidKeyDataException(InvalidKeyDataException.Reason.PROTO_PARSE, ex);
     }
     // TODO(darylseah): extract security properties from core
 
@@ -116,25 +115,22 @@ public class Key {
     for (KeyVersionData kvData : data.getKeyVersionList()) {
       if (!kvData.hasType()) {
         // Type field is required
-        throw new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.PROTO_PARSE, null);
+        throw new InvalidKeyDataException(InvalidKeyDataException.Reason.PROTO_PARSE, null);
       }
       try {
-        KeyVersion kv = registry.newBuilder(kvData.getType())
-            .withData(kvData, protoRegistry).build();
+        KeyVersion kv =
+            registry.newBuilder(kvData.getType()).withData(kvData, protoRegistry).build();
         keyVersions.add(kv);
       } catch (InvalidProtocolBufferException ex) {
         // Throw proto parsing exceptions immediately
-        throw new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.PROTO_PARSE, ex);
+        throw new InvalidKeyDataException(InvalidKeyDataException.Reason.PROTO_PARSE, ex);
       } catch (RuntimeException ex) {
         // We consider runtime exceptions to be parsing exceptions
-        throw new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.PROTO_PARSE, ex);
+        throw new InvalidKeyDataException(InvalidKeyDataException.Reason.PROTO_PARSE, ex);
       } catch (BuilderException ex) {
         // Delay-throw builder exceptions...
-        buildException = new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.KEY_VERSION_BUILD, ex);
+        buildException =
+            new InvalidKeyDataException(InvalidKeyDataException.Reason.KEY_VERSION_BUILD, ex);
       } catch (UnregisteredKeyVersionException ex) {
         // ...and unregistered key version exceptions
         unregisteredException = ex;
@@ -152,8 +148,7 @@ public class Key {
     if (kvCount > 0) {
       int primaryIndex = (data.hasPrimary() ? data.getPrimary() : -1);
       if (primaryIndex < 0 || primaryIndex >= keyVersions.size()) {
-        throw new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.CORRUPTED_PRIMARY, null);
+        throw new InvalidKeyDataException(InvalidKeyDataException.Reason.CORRUPTED_PRIMARY, null);
       }
       primary = keyVersions.get(primaryIndex);
     }
@@ -255,14 +250,11 @@ public class Key {
    * @param keyversion the keyversion to remove from the key
    * @throws KeyModifierException
    */
-  protected void removeKeyVersion(KeyVersion keyversion)
-      throws KeyModifierException {
+  protected void removeKeyVersion(KeyVersion keyversion) throws KeyModifierException {
     if (!keyVersions.contains(keyversion)) {
-      throw new KeyModifierException(
-          "Given KeyVersion is not in the Key");
+      throw new KeyModifierException("Given KeyVersion is not in the Key");
     } else if (this.primary == keyversion) {
-      throw new KeyModifierException(
-          "Cannot remove KeyVersion as it is the primary in the Key");
+      throw new KeyModifierException("Cannot remove KeyVersion as it is the primary in the Key");
     } else {
       this.keyVersions.remove(keyversion);
     }

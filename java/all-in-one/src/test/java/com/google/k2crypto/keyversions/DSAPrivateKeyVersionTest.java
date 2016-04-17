@@ -14,8 +14,8 @@
 
 package com.google.k2crypto.keyversions;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.google.k2crypto.exceptions.BuilderException;
 import com.google.k2crypto.exceptions.EncryptionException;

@@ -1,17 +1,15 @@
 /*
  * Copyright 2014 Google Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.k2crypto.keyversions;
@@ -23,13 +21,14 @@ import static org.junit.Assert.fail;
 import com.google.k2crypto.K2Context;
 import com.google.k2crypto.K2Exception;
 import com.google.k2crypto.exceptions.KeyVersionException;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.ExtensionRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.ExtensionRegistry;
 
 /**
  * Unit tests for a RegisteredKeyVersion.
@@ -48,14 +47,16 @@ public class RegisteredKeyVersionTest {
   /**
    * Creates a context for the tests.
    */
-  @Before public final void setUp() {
+  @Before
+  public final void setUp() {
     context = new K2Context();
   }
 
   /**
    * Tests rejection when the context to the constructor is null.
    */
-  @Test public final void testRejectNullContext() throws K2Exception {
+  @Test
+  public final void testRejectNullContext() throws K2Exception {
     Class<? extends KeyVersion> kvClass = MockKeyVersion.class;
     try {
       new RegisteredKeyVersion(null, kvClass);
@@ -68,7 +69,8 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection when the key version class to the constructor is null.
    */
-  @Test public final void testRejectNullKeyVersionClass() throws K2Exception {
+  @Test
+  public final void testRejectNullKeyVersionClass() throws K2Exception {
     try {
       new RegisteredKeyVersion(context, null);
       fail("Expected NullPointerException of kvClass.");
@@ -88,10 +90,8 @@ public class RegisteredKeyVersionTest {
    *
    * @throws KeyVersionException if the key version is rejected.
    */
-  private RegisteredKeyVersion checkAcceptRegistration(
-      Class<? extends KeyVersion> kvClass,
-      Class<? extends KeyVersion.Builder> kvBuilderClass)
-          throws KeyVersionException {
+  private RegisteredKeyVersion checkAcceptRegistration(Class<? extends KeyVersion> kvClass,
+      Class<? extends KeyVersion.Builder> kvBuilderClass) throws KeyVersionException {
     assertTrue(kvClass.equals(kvBuilderClass.getEnclosingClass()));
     RegisteredKeyVersion rkv = new RegisteredKeyVersion(context, kvClass);
     assertEquals(kvClass, rkv.getKeyVersionClass());
@@ -109,10 +109,8 @@ public class RegisteredKeyVersionTest {
    * @param failMessage Assertion message used if the key version is
    *                    NOT rejected.
    */
-  private void checkRejectRegistration(
-      Class<? extends KeyVersion> kvClass,
-      KeyVersionException.Reason reason,
-      String failMessage) {
+  private void checkRejectRegistration(Class<? extends KeyVersion> kvClass,
+      KeyVersionException.Reason reason, String failMessage) {
     try {
       new RegisteredKeyVersion(context, kvClass);
       fail(failMessage);
@@ -126,12 +124,12 @@ public class RegisteredKeyVersionTest {
    * Tests successful verification of a valid implementation and basic
    * functionality.
    */
-  @Test public final void testAcceptValid()
-      throws Exception {
+  @Test
+  public final void testAcceptValid() throws Exception {
 
     // Verify basic acceptance
-    RegisteredKeyVersion rkv = checkAcceptRegistration(
-        MockKeyVersion.class, MockKeyVersion.Builder.class);
+    RegisteredKeyVersion rkv =
+        checkAcceptRegistration(MockKeyVersion.class, MockKeyVersion.Builder.class);
 
     // Verify return values of various access methods
     assertEquals(context, rkv.getContext());
@@ -152,10 +150,9 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of a key version without a builder inner-class.
    */
-  @Test public final void testRejectMissingBuilder() {
-    checkRejectRegistration(
-        KVWithoutBuilder.class,
-        KeyVersionException.Reason.NO_BUILDER,
+  @Test
+  public final void testRejectMissingBuilder() {
+    checkRejectRegistration(KVWithoutBuilder.class, KeyVersionException.Reason.NO_BUILDER,
         "Key versions without a Builder inner-class should be rejected.");
   }
 
@@ -170,12 +167,11 @@ public class RegisteredKeyVersionTest {
    * Tests rejection of a key version builder without a
    * zero-argument constructor.
    */
-  @Test public final void testRejectMissingBuilderConstructor() {
-    checkRejectRegistration(
-        KVWithMissingBuilderConstructor.class,
+  @Test
+  public final void testRejectMissingBuilderConstructor() {
+    checkRejectRegistration(KVWithMissingBuilderConstructor.class,
         KeyVersionException.Reason.NO_CONSTRUCTOR,
-        "Key version builders without a zero-argument constructor "
-            + "should be rejected.");
+        "Key version builders without a zero-argument constructor " + "should be rejected.");
   }
 
   // Test "data" for the above
@@ -183,9 +179,12 @@ public class RegisteredKeyVersionTest {
     public KVWithMissingBuilderConstructor(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
       public Builder(Object obj) {}
-      @Override public KVWithMissingBuilderConstructor build() {
+
+      @Override
+      public KVWithMissingBuilderConstructor build() {
         return null;
       }
     }
@@ -194,12 +193,10 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of a key version builder NOT extending KeyVersion.Builder.
    */
-  @Test public final void testRejectWrongBuilderParent() {
-    checkRejectRegistration(
-        KVWithWrongBuilderParent.class,
-        KeyVersionException.Reason.BAD_PARENT,
-        "Key version builders not extending KeyVersion.Builder "
-            + "should be rejected.");
+  @Test
+  public final void testRejectWrongBuilderParent() {
+    checkRejectRegistration(KVWithWrongBuilderParent.class, KeyVersionException.Reason.BAD_PARENT,
+        "Key version builders not extending KeyVersion.Builder " + "should be rejected.");
   }
 
   // Test "data" for the above
@@ -207,6 +204,7 @@ public class RegisteredKeyVersionTest {
     public KVWithWrongBuilderParent(MockKeyVersion.Builder builder) {
       super(builder);
     }
+
     public static class Builder {
       public KVWithWrongBuilderParent build() {
         return null;
@@ -218,12 +216,10 @@ public class RegisteredKeyVersionTest {
    * Tests rejection of a key version builder that does not build() a key
    * version of the enclosing class type.
    */
-  @Test public final void testRejectBadBuildMethod() {
-    checkRejectRegistration(
-        KVWithBadBuildMethod.class,
-        KeyVersionException.Reason.BAD_BUILD,
-        "Key version builders that don't build the specified key version "
-            + "should be rejected.");
+  @Test
+  public final void testRejectBadBuildMethod() {
+    checkRejectRegistration(KVWithBadBuildMethod.class, KeyVersionException.Reason.BAD_BUILD,
+        "Key version builders that don't build the specified key version " + "should be rejected.");
   }
 
   // Test "data" for the above
@@ -231,8 +227,10 @@ public class RegisteredKeyVersionTest {
     public KVWithBadBuildMethod(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
-      @Override public MockKeyVersion build() {
+      @Override
+      public MockKeyVersion build() {
         return null;
       }
     }
@@ -242,10 +240,9 @@ public class RegisteredKeyVersionTest {
    * Tests acceptance of an abstract key version (only the Builder need not
    * be abstract).
    */
-  @Test public final void testAcceptAbstract() throws K2Exception {
-    checkAcceptRegistration(
-        AbstractKeyVersion.class,
-        AbstractKeyVersion.Builder.class);
+  @Test
+  public final void testAcceptAbstract() throws K2Exception {
+    checkAcceptRegistration(AbstractKeyVersion.class, AbstractKeyVersion.Builder.class);
   }
 
   // Test "data" for the above
@@ -253,8 +250,10 @@ public class RegisteredKeyVersionTest {
     private AbstractKeyVersion(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
-      @Override public AbstractKeyVersion build() {
+      @Override
+      public AbstractKeyVersion build() {
         return new AbstractKeyVersion(this) {};
       }
     }
@@ -263,9 +262,9 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of an abstract key version builder.
    */
-  @Test public final void testRejectAbstractBuilder() {
-    checkRejectRegistration(
-        KVWithAbstractBuilder.class,
+  @Test
+  public final void testRejectAbstractBuilder() {
+    checkRejectRegistration(KVWithAbstractBuilder.class,
         KeyVersionException.Reason.INSTANTIATE_FAIL,
         "Key version with abstract builders should be rejected.");
   }
@@ -275,8 +274,10 @@ public class RegisteredKeyVersionTest {
     private KVWithAbstractBuilder(Builder builder) {
       super(builder);
     }
+
     public static abstract class Builder extends MockKeyVersion.Builder {
-      @Override public KVWithAbstractBuilder build() {
+      @Override
+      public KVWithAbstractBuilder build() {
         return null;
       }
     }
@@ -286,10 +287,9 @@ public class RegisteredKeyVersionTest {
    * Tests acceptance of a private key version builder with a package-protected
    * constructor. (Yes, this works.)
    */
-  @Test public final void testAcceptPrivateBuilder() throws K2Exception {
-    checkAcceptRegistration(
-        KVWithPrivateBuilder.class,
-        KVWithPrivateBuilder.Builder.class);
+  @Test
+  public final void testAcceptPrivateBuilder() throws K2Exception {
+    checkAcceptRegistration(KVWithPrivateBuilder.class, KVWithPrivateBuilder.Builder.class);
   }
 
   // Test "data" for the above
@@ -297,9 +297,13 @@ public class RegisteredKeyVersionTest {
     private KVWithPrivateBuilder(Builder builder) {
       super(builder);
     }
+
     private static class Builder extends MockKeyVersion.Builder {
-      @SuppressWarnings("unused") Builder() {}
-      @Override public KVWithPrivateBuilder build() {
+      @SuppressWarnings("unused")
+      Builder() {}
+
+      @Override
+      public KVWithPrivateBuilder build() {
         return new KVWithPrivateBuilder(this);
       }
     }
@@ -308,9 +312,9 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of a key version builder with a private constructor.
    */
-  @Test public final void testRejectPrivateConstructorBuilder() {
-    checkRejectRegistration(
-        KVWithPrivateConstructorBuilder.class,
+  @Test
+  public final void testRejectPrivateConstructorBuilder() {
+    checkRejectRegistration(KVWithPrivateConstructorBuilder.class,
         KeyVersionException.Reason.INSTANTIATE_FAIL,
         "Key version builders with private constructors should be rejected.");
   }
@@ -320,9 +324,12 @@ public class RegisteredKeyVersionTest {
     private KVWithPrivateConstructorBuilder(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
       private Builder() {}
-      @Override public KVWithPrivateConstructorBuilder build() {
+
+      @Override
+      public KVWithPrivateConstructorBuilder build() {
         return null;
       }
     }
@@ -332,9 +339,9 @@ public class RegisteredKeyVersionTest {
    * Tests rejection of a key version builder with a constructor that throws
    * illegal throwables.
    */
-  @Test public final void testRejectConstructorWithBadThrowables() {
-    checkRejectRegistration(
-        KVWithBadThrowablesBuilder.class,
+  @Test
+  public final void testRejectConstructorWithBadThrowables() {
+    checkRejectRegistration(KVWithBadThrowablesBuilder.class,
         KeyVersionException.Reason.ILLEGAL_THROWS,
         "Key version builders with constructors throwing throwables other "
             + "than Error and RuntimeException should be rejected.");
@@ -345,9 +352,12 @@ public class RegisteredKeyVersionTest {
     private KVWithBadThrowablesBuilder(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
       public Builder() throws Exception, Throwable {}
-      @Override public KVWithBadThrowablesBuilder build() {
+
+      @Override
+      public KVWithBadThrowablesBuilder build() {
         return null;
       }
     }
@@ -357,10 +367,9 @@ public class RegisteredKeyVersionTest {
    * Test acceptance of a key version builder with a constructor that throws
    * entirely legal throwables.
    */
-  @Test public final void testAcceptConstructorWithLegalThrowables()
-      throws K2Exception {
-    checkAcceptRegistration(
-        KVWithLegalThrowablesBuilder.class,
+  @Test
+  public final void testAcceptConstructorWithLegalThrowables() throws K2Exception {
+    checkAcceptRegistration(KVWithLegalThrowablesBuilder.class,
         KVWithLegalThrowablesBuilder.Builder.class);
   }
 
@@ -369,9 +378,12 @@ public class RegisteredKeyVersionTest {
     private KVWithLegalThrowablesBuilder(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends MockKeyVersion.Builder {
       public Builder() throws Error, RuntimeException {}
-      @Override public KVWithLegalThrowablesBuilder build() {
+
+      @Override
+      public KVWithLegalThrowablesBuilder build() {
         return new KVWithLegalThrowablesBuilder(this);
       }
     }
@@ -380,12 +392,10 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of a key version without the meta-data annotation.
    */
-  @Test public final void testRejectMissingAnnotation() {
-    checkRejectRegistration(
-        KVWithoutAnnotation.class,
-        KeyVersionException.Reason.NO_METADATA,
-        "Key version builders without the KeyVersionInfo annotation "
-            + "should be rejected.");
+  @Test
+  public final void testRejectMissingAnnotation() {
+    checkRejectRegistration(KVWithoutAnnotation.class, KeyVersionException.Reason.NO_METADATA,
+        "Key version builders without the KeyVersionInfo annotation " + "should be rejected.");
   }
 
   // Test "data" for the above
@@ -393,8 +403,10 @@ public class RegisteredKeyVersionTest {
     private KVWithoutAnnotation(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends KeyVersion.Builder {
-      @Override public KVWithoutAnnotation build() {
+      @Override
+      public KVWithoutAnnotation build() {
         return null;
       }
     }
@@ -403,42 +415,42 @@ public class RegisteredKeyVersionTest {
   /**
    * Tests rejection of a key version that specifies an invalid protobuf class.
    */
-  @Test public final void testRejectBadProto() {
-    checkRejectRegistration(
-        KVWithObjectProto.class,
-        KeyVersionException.Reason.BAD_PROTO,
+  @Test
+  public final void testRejectBadProto() {
+    checkRejectRegistration(KVWithObjectProto.class, KeyVersionException.Reason.BAD_PROTO,
         "Key versions not specifying a valid proto should be rejected.");
-    checkRejectRegistration(
-        KVWithSelfProto.class,
-        KeyVersionException.Reason.BAD_PROTO,
+    checkRejectRegistration(KVWithSelfProto.class, KeyVersionException.Reason.BAD_PROTO,
         "Key versions specifying a proto with a non-static register"
             + "extensions method should be rejected.");
   }
 
   // Test "data" for the above
-  @KeyVersionInfo(
-      type = KeyVersionProto.Type.TEST, proto = Object.class)
+  @KeyVersionInfo(type = KeyVersionProto.Type.TEST, proto = Object.class)
   public static class KVWithObjectProto extends KeyVersion {
     private KVWithObjectProto(Builder builder) {
       super(builder);
     }
+
     public static class Builder extends KeyVersion.Builder {
-      @Override public KVWithObjectProto build() {
+      @Override
+      public KVWithObjectProto build() {
         return null;
       }
     }
   }
 
   // Test "data" for the above
-  @KeyVersionInfo(
-      type = KeyVersionProto.Type.TEST, proto = KVWithSelfProto.class)
+  @KeyVersionInfo(type = KeyVersionProto.Type.TEST, proto = KVWithSelfProto.class)
   public static class KVWithSelfProto extends KeyVersion {
     private KVWithSelfProto(Builder builder) {
       super(builder);
     }
+
     public void registerAllExtensions(ExtensionRegistry registry) {}
+
     public static class Builder extends KeyVersion.Builder {
-      @Override public KVWithSelfProto build() {
+      @Override
+      public KVWithSelfProto build() {
         return null;
       }
     }

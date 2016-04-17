@@ -21,5 +21,5 @@ package com.google.k2crypto;
  * @author John Maheswaran (maheswaran@google.com)
  */
 public enum Algorithm {
-  AES,DSA,HMAC,RSA
+  AES, DSA, HMAC, RSA
 }

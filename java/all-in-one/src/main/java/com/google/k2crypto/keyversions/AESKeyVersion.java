@@ -15,13 +15,10 @@
 package com.google.k2crypto.keyversions;
 
 import com.google.k2crypto.exceptions.BuilderException;
-import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionCore;
-import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionData;
 import com.google.k2crypto.keyversions.AesKeyVersionProto.AesKeyVersionCore;
 import com.google.k2crypto.keyversions.AesKeyVersionProto.AesKeyVersionData;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.ExtensionRegistry;
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionCore;
+import com.google.k2crypto.keyversions.KeyVersionProto.KeyVersionData;
 
 import java.security.SecureRandom;
 
@@ -31,19 +28,21 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.ExtensionRegistry;
+import com.google.protobuf.InvalidProtocolBufferException;
+
 /**
  * This class represents an AES key version in K2. It allows you to encrypt and
  * decrypt messaged using AES symmetric key encryption
  *
  * @author John Maheswaran (maheswaran@google.com)
  */
-@KeyVersionInfo(
-    type = KeyVersionProto.Type.AES,
-    proto = AesKeyVersionProto.class)
+@KeyVersionInfo(type = KeyVersionProto.Type.AES, proto = AesKeyVersionProto.class)
 public class AESKeyVersion extends SymmetricKeyVersion {
-  
+
   private static final int BLOCK_SIZE = 16; // bytes;
-  
+
   /**
    * The key length in bytes (128 bits / 8 = 16 bytes) Can be 16, 24 or 32
    * (NO OTHER VALUES)
@@ -107,7 +106,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
   private int keyLengthInBytes() {
     return this.keyVersionLengthInBytes;
   }
-  
+
   /**
    * represents the algorithm, mode, and padding to use and paddings
    * (NOT algorithm - AES ONLY)
@@ -152,26 +151,24 @@ public class AESKeyVersion extends SymmetricKeyVersion {
       // was provided
       if (builder.keyVersionMatterInitVectorProvided) {
         // load the initialization vector
-        initVector = (builder.initVector == null ?
-            null : builder.initVector.clone());
+        initVector = (builder.initVector == null ? null : builder.initVector.clone());
 
         // initialize secret key using key matter byte array
-        secretKey = new SecretKeySpec(
-            builder.keyVersionMatter, 0, this.keyLengthInBytes(), "AES");
-        
+        secretKey = new SecretKeySpec(builder.keyVersionMatter, 0, this.keyLengthInBytes(), "AES");
+
       } else {
         // Generate the key using JCE crypto libraries
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(this.keyLengthInBits());
         secretKey = keyGen.generateKey();
       }
-      
+
       if (initVector == null) {
         // use this secure random number generator to initialize
         // the vector with random bytes
         SecureRandom prng = new SecureRandom();
         initVector = new byte[BLOCK_SIZE];
-        prng.nextBytes(initVector);        
+        prng.nextBytes(initVector);
       }
 
       // make an AES cipher that we can use for encryption
@@ -213,8 +210,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
         case CTR:
           // Initialize the cipher using the secret key of this class
           // and the initialization vector
-          decryptingCipher.init(
-              Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initVector));
+          decryptingCipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(initVector));
           break;
         default:
           throw new BuilderException("Unrecognized mode");
@@ -226,7 +222,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
       throw new BuilderException("Building AESKeyVersion failed", e);
     }
   }
-  
+
   /**
    * Public method to get the byte array of the AES key version matter
    *
@@ -235,21 +231,21 @@ public class AESKeyVersion extends SymmetricKeyVersion {
   public byte[] getKeyVersionMatter() {
     return this.secretKey.getEncoded();
   }
-  
+
   /**
    * Returns a copy of the IV.
    */
   public byte[] getInitVector() {
     return initVector.clone();
   }
-  
+
   /**
    * Returns the algorithm, mode, and padding string passed to JCE.
    */
   public String getAlgModePadding() {
     return algModePadding;
   }
-  
+
   /**
    * Method to get the encrypting cipher of this key version
    *
@@ -278,20 +274,20 @@ public class AESKeyVersion extends SymmetricKeyVersion {
   @Override
   protected KeyVersionCore.Builder buildCore() {
     AesKeyVersionCore.Builder coreBuilder = AesKeyVersionCore.newBuilder();
-    
+
     // Populate the core builder
     coreBuilder.setMatter(ByteString.copyFrom(secretKey.getEncoded()));
-    
+
     // We can just use valueOf here because the enum constants have the same
     // names. This may not be the case for all key versions...
     coreBuilder.setBlockMode(KeyVersionProto.BlockMode.valueOf(mode.name()));
     coreBuilder.setPadding(KeyVersionProto.Padding.valueOf(padding.name()));
-    
+
     KeyVersionCore.Builder builder = super.buildCore();
     builder.setExtension(AesKeyVersionCore.extension, coreBuilder.build());
     return builder;
   }
-  
+
   /**
    * @see KeyVersion#buildData()
    */
@@ -299,7 +295,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
   public KeyVersionData.Builder buildData() {
     AesKeyVersionData.Builder dataBuilder = AesKeyVersionData.newBuilder();
     // TODO(darylseah): Populate the data builder
-    
+
     KeyVersionData.Builder builder = super.buildData();
     builder.setExtension(AesKeyVersionData.extension, dataBuilder.build());
     return builder;
@@ -315,7 +311,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
      * key size can be 16, 24 or 32
      */
     private int keyVersionLengthInBytes = 16;
-    
+
     /**
      * Supported modes: CBC, ECB, OFB, CFB, CTR Unsupported modes: XTS, OCB
      */
@@ -333,7 +329,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
      * Byte array that will represent the key matter
      */
     private byte[] keyVersionMatter;
-    
+
     /**
      * Byte array that will represent the initialization vector
      */
@@ -397,7 +393,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
       if (keyVersionMatter == null) {
         throw new NullPointerException("keyVersionMatter");
       }
-      
+
       // This flag indicates to the parent class (AESKeyVersion) that the
       // key matter and initialization vector have been manually set
       keyVersionMatterInitVectorProvided = true;
@@ -407,7 +403,7 @@ public class AESKeyVersion extends SymmetricKeyVersion {
       this.initVector = initVector;
       // set derived key size
       keyVersionLengthInBytes = keyVersionMatter.length;
-            
+
       return this;
     }
 
@@ -418,11 +414,11 @@ public class AESKeyVersion extends SymmetricKeyVersion {
     public Builder withData(KeyVersionData kvData, ExtensionRegistry registry)
         throws InvalidProtocolBufferException {
       super.withData(kvData, registry);
-      
+
       @SuppressWarnings("unused")
       AesKeyVersionData data = kvData.getExtension(AesKeyVersionData.extension);
       // TODO(darylseah): Extract info from data (currently not used)
-      
+
       return this;
     }
 
@@ -430,18 +426,17 @@ public class AESKeyVersion extends SymmetricKeyVersion {
      * @see KeyVersion.Builder#withCore(KeyVersionCore)
      */
     @Override
-    protected Builder withCore(KeyVersionCore kvCore)
-        throws InvalidProtocolBufferException {
+    protected Builder withCore(KeyVersionCore kvCore) throws InvalidProtocolBufferException {
       super.withCore(kvCore);
-      
+
       // Extract info from core
       AesKeyVersionCore core = kvCore.getExtension(AesKeyVersionCore.extension);
       this.matterVector(core.getMatter().toByteArray(), null);
-      
-      // valueOf()s below can fail if the mode/padding stored is unsupported 
+
+      // valueOf()s below can fail if the mode/padding stored is unsupported
       this.mode(Mode.valueOf(core.getBlockMode().name()));
       this.padding(Padding.valueOf(core.getPadding().name()));
-      
+
       return this;
     }
 

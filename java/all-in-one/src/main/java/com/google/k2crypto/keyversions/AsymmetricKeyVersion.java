@@ -23,8 +23,8 @@ package com.google.k2crypto.keyversions;
 public abstract class AsymmetricKeyVersion extends KeyVersion {
 
   /**
-   * Passes on the Builder to initialize the KeyVersion super-class. 
-   * 
+   * Passes on the Builder to initialize the KeyVersion super-class.
+   *
    * @param builder Builder from sub-class creation.
    */
   protected AsymmetricKeyVersion(Builder builder) {

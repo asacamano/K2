@@ -23,8 +23,8 @@ package com.google.k2crypto.keyversions;
 public abstract class HashKeyVersion extends KeyVersion {
 
   /**
-   * Passes on the Builder to initialize the KeyVersion super-class. 
-   * 
+   * Passes on the Builder to initialize the KeyVersion super-class.
+   *
    * @param builder Builder from sub-class creation.
    */
   protected HashKeyVersion(Builder builder) {

@@ -1,17 +1,15 @@
 /*
  * Copyright 2014 Google Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.k2crypto.storage;
@@ -39,8 +37,7 @@ public class InstalledDriver {
   // Regex matching a valid URI scheme.
   // (Same as http://tools.ietf.org/html/rfc3986#section-3.1,
   //  except we do not accept upper-case.)
-  private static final Pattern LEGAL_ID =
-      Pattern.compile("^[a-z][a-z0-9\\+\\-\\.]*$");
+  private static final Pattern LEGAL_ID = Pattern.compile("^[a-z][a-z0-9\\+\\-\\.]*$");
 
   // Context for the current K2 session
   private final K2Context context;
@@ -86,8 +83,7 @@ public class InstalledDriver {
 
     if (!canRead && !canWrite) {
       // A driver that can neither read nor write is literally useless
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.USELESS);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.USELESS);
     }
 
     try {
@@ -97,8 +93,8 @@ public class InstalledDriver {
       for (Class<?> exClass : constructor.getExceptionTypes()) {
         if (!RuntimeException.class.isAssignableFrom(exClass)
             && !Error.class.isAssignableFrom(exClass)) {
-          throw new StorageDriverException(
-              driverClass, StorageDriverException.Reason.ILLEGAL_THROWS);
+          throw new StorageDriverException(driverClass,
+              StorageDriverException.Reason.ILLEGAL_THROWS);
         }
       }
       // Try to instantiate the driver (should work if driver is accessible)
@@ -106,37 +102,30 @@ public class InstalledDriver {
 
     } catch (NoSuchMethodException ex) {
       // Constructor not found
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.NO_CONSTRUCTOR);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.NO_CONSTRUCTOR);
     } catch (InvocationTargetException ex) {
       // Instantiation failed
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
     } catch (IllegalArgumentException ex) {
       // Instantiation failed
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
     } catch (InstantiationException ex) {
       // Instantiation failed
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
     } catch (IllegalAccessException ex) {
       // Instantiation failed
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
     }
 
     // Check that annotation is present
     info = driverClass.getAnnotation(DriverInfo.class);
     if (info == null) {
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.NO_METADATA);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.NO_METADATA);
     }
 
     // Check that driver identifier is legal
     if (!LEGAL_ID.matcher(info.id()).matches()) {
-      throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.ILLEGAL_ID);
+      throw new StorageDriverException(driverClass, StorageDriverException.Reason.ILLEGAL_ID);
     }
   }
 
@@ -165,9 +154,9 @@ public class InstalledDriver {
     // Re-throw throwables that do not need an explicit catch. (This should
     // not actually happen unless the driver has a flaky constructor.)
     if (t instanceof Error) {
-      throw (Error)t;
+      throw (Error) t;
     } else if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
+      throw (RuntimeException) t;
     } else {
       // This should not happen, owing to construction-time checks.
       // But, just in case
@@ -266,9 +255,8 @@ public class InstalledDriver {
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof InstalledDriver) {
-      InstalledDriver other = (InstalledDriver)obj;
-      return other.driverClass.equals(driverClass)
-          && other.context.equals(context);
+      InstalledDriver other = (InstalledDriver) obj;
+      return other.driverClass.equals(driverClass) && other.context.equals(context);
     }
     return false;
   }
@@ -278,7 +266,6 @@ public class InstalledDriver {
    */
   @Override
   public String toString() {
-    return "[" + getId() + "/" + driverClass.getName() + "] "
-        + getName() + " " + getVersion();
+    return "[" + getId() + "/" + driverClass.getName() + "] " + getName() + " " + getVersion();
   }
 }

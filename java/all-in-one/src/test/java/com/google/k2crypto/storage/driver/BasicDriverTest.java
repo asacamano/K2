@@ -1,17 +1,15 @@
 /*
  * Copyright 2014 Google Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.k2crypto.storage.driver;
@@ -35,13 +33,13 @@ import com.google.k2crypto.storage.StoreIOException;
 import com.google.k2crypto.storage.driver.Driver;
 import com.google.k2crypto.storage.driver.ReadableDriver;
 
+import java.net.URI;
+import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import java.net.URI;
-import java.util.Random;
 
 /**
  * Boilerplate class for a storage driver JUnit test.
@@ -81,7 +79,8 @@ public abstract class BasicDriverTest<T extends Driver> {
   /**
    * Creates shared objects for use in tests.
    */
-  @Before public void setupShared() {
+  @Before
+  public void setupShared() {
     sharedContext = newContext();
     sharedRandom = new Random();
   }
@@ -90,7 +89,8 @@ public abstract class BasicDriverTest<T extends Driver> {
    * Test that the driver has a valid structure by attempting to install it.
    * This simple test applies to any driver.
    */
-  @Test public void testDriverStructure() {
+  @Test
+  public void testDriverStructure() {
     K2Storage storage = new K2Storage(getSharedContext());
     try {
       storage.installDriver(driverClass);
@@ -162,8 +162,7 @@ public abstract class BasicDriverTest<T extends Driver> {
    * @param address String address to open.
    * @param reason Reason the address is rejected.
    */
-  protected void checkRejectAddress(
-      String address, IllegalAddressException.Reason reason) {
+  protected void checkRejectAddress(String address, IllegalAddressException.Reason reason) {
     checkRejectAddress(URI.create(address), reason);
   }
 
@@ -173,8 +172,7 @@ public abstract class BasicDriverTest<T extends Driver> {
    * @param address URI address to open.
    * @param reason Reason the address is rejected.
    */
-  protected void checkRejectAddress(
-      URI address, IllegalAddressException.Reason reason) {
+  protected void checkRejectAddress(URI address, IllegalAddressException.Reason reason) {
     Driver driver = newDriver();
     try {
       driver.open(address);
@@ -197,8 +195,7 @@ public abstract class BasicDriverTest<T extends Driver> {
    *
    * @throws K2Exception if there is an unexpected failure opening the address.
    */
-  protected void checkNormalization(String expected, String address)
-      throws K2Exception {
+  protected void checkNormalization(String expected, String address) throws K2Exception {
     Driver driver = newDriver();
     try {
       URI result = driver.open(URI.create(address));
@@ -216,9 +213,8 @@ public abstract class BasicDriverTest<T extends Driver> {
    *
    * @throws StoreException if there is an unexpected error.
    */
-  protected void checkLoadFails(
-      ReadableDriver driver, StoreIOException.Reason reason)
-          throws StoreException {
+  protected void checkLoadFails(ReadableDriver driver, StoreIOException.Reason reason)
+      throws StoreException {
     assertFalse(driver.isEmpty());
     try {
       driver.load();
@@ -236,12 +232,10 @@ public abstract class BasicDriverTest<T extends Driver> {
    *
    * @throws StoreException if there is an unexpected error loading.
    */
-  protected void checkLoad(ReadableDriver driver, Key expected)
-      throws StoreException {
+  protected void checkLoad(ReadableDriver driver, Key expected) throws StoreException {
     assertFalse(driver.isEmpty());
     Key loaded = driver.load();
-    assertEquals(
-        expected.buildData().build().toByteString(),
+    assertEquals(expected.buildData().build().toByteString(),
         loaded.buildData().build().toByteString());
   }
 
@@ -255,8 +249,8 @@ public abstract class BasicDriverTest<T extends Driver> {
    * @throws StoreException if there is an unexpected error during the sequence.
    */
   protected void checkLoadSaveErase(Driver driver) throws StoreException {
-    ReadableDriver rdriver = (ReadableDriver)driver;
-    WritableDriver wdriver = (WritableDriver)driver;
+    ReadableDriver rdriver = (ReadableDriver) driver;
+    WritableDriver wdriver = (WritableDriver) driver;
 
     assertFalse(wdriver.erase());
     assertTrue(rdriver.isEmpty());
@@ -284,8 +278,8 @@ public abstract class BasicDriverTest<T extends Driver> {
   protected String generateString(int length) {
     Random random = getSharedRandom();
     char[] buffer = new char[length];
-    for (int i = buffer.length; --i >= 0; ) {
-      buffer[i] = (char)('0' + random.nextInt(10));
+    for (int i = buffer.length; --i >= 0;) {
+      buffer[i] = (char) ('0' + random.nextInt(10));
     }
     return new String(buffer);
   }

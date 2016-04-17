@@ -106,7 +106,7 @@ public class KeyModifierTest {
     // check that the key does not contain the first key version
     assertFalse(keymod.containsKeyVersion(keyversion1));
 
-   // now add the keyversion1 back to the Key
+    // now add the keyversion1 back to the Key
     keymod.addKeyVersion(keyversion1);
 
     // check that the key DOES contain the new key version
@@ -141,7 +141,7 @@ public class KeyModifierTest {
    * @throws BuilderException
    * @throws KeyModifierException
    */
-  @Test(expected=com.google.k2crypto.exceptions.KeyModifierException.class)
+  @Test(expected = com.google.k2crypto.exceptions.KeyModifierException.class)
   public void testRemovePrimary() throws BuilderException, KeyModifierException {
     // create a key modifier
     KeyModifier keymod = new KeyModifier();

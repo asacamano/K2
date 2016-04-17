@@ -25,14 +25,14 @@ import javax.crypto.Cipher;
 public abstract class SymmetricKeyVersion extends KeyVersion {
 
   /**
-   * Passes on the Builder to initialize the KeyVersion super-class. 
-   * 
+   * Passes on the Builder to initialize the KeyVersion super-class.
+   *
    * @param builder Builder from sub-class creation.
    */
   protected SymmetricKeyVersion(Builder builder) {
     super(builder);
   }
-  
+
   /**
    * Method that returns the symmetric key version's encrypting Cipher
    *

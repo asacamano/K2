@@ -18,7 +18,6 @@ import com.google.k2crypto.K2Context;
 import com.google.k2crypto.exceptions.KeyVersionException;
 import com.google.k2crypto.exceptions.UnregisteredKeyVersionException;
 import com.google.k2crypto.keyversions.KeyVersionProto.Type;
-import com.google.protobuf.ExtensionRegistry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -27,10 +26,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.protobuf.ExtensionRegistry;
+
 /**
  * A registry of available {@link KeyVersion} implementations.
  *
- * <p>This class is thread-safe.
+ * <p>
+ * This class is thread-safe.
  *
  * @author darylseah@gmail.com (Daryl Seah)
  */
@@ -88,8 +90,7 @@ public class KeyVersionRegistry {
    * @throws UnregisteredKeyVersionException if a key version implementation
    *     for the type has not been registered.
    */
-  public KeyVersion.Builder newBuilder(Type type)
-      throws UnregisteredKeyVersionException {
+  public KeyVersion.Builder newBuilder(Type type) throws UnregisteredKeyVersionException {
     if (type == null) {
       throw new NullPointerException("type");
     }
@@ -190,8 +191,7 @@ public class KeyVersionRegistry {
       throw new NullPointerException("kvClass");
     }
 
-    RegisteredKeyVersion regKeyVersion =
-        new RegisteredKeyVersion(context, kvClass);
+    RegisteredKeyVersion regKeyVersion = new RegisteredKeyVersion(context, kvClass);
     Type type = regKeyVersion.getType();
 
     synchronized (keyVersions) {
@@ -233,8 +233,8 @@ public class KeyVersionRegistry {
     synchronized (keyVersions) {
       List<RegisteredKeyVersion> list = cachedKeyVersionList;
       if (list == null) {
-        list = Collections.unmodifiableList(
-            new ArrayList<RegisteredKeyVersion>(keyVersions.values()));
+        list =
+            Collections.unmodifiableList(new ArrayList<RegisteredKeyVersion>(keyVersions.values()));
         cachedKeyVersionList = list;
       }
       return list;

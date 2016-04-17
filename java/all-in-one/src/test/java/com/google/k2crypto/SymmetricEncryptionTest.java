@@ -20,14 +20,14 @@ import com.google.k2crypto.exceptions.BuilderException;
 import com.google.k2crypto.exceptions.DecryptionException;
 import com.google.k2crypto.exceptions.EncryptionException;
 import com.google.k2crypto.keyversions.AESKeyVersion;
+import com.google.k2crypto.keyversions.AESKeyVersion.Mode;
 import com.google.k2crypto.keyversions.AESKeyVersion.Padding;
 import com.google.k2crypto.keyversions.SymmetricKeyVersion;
-import com.google.k2crypto.keyversions.AESKeyVersion.Mode;
-
-import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import org.junit.Test;
 
 /**
  * This class tests symmetric encryption in K2.
@@ -44,8 +44,8 @@ public class SymmetricEncryptionTest {
    * @throws EncryptionException
    */
   @Test
-  public void testEncryptDecrypt() throws DecryptionException, BuilderException,
-      EncryptionException {
+  public void testEncryptDecrypt()
+      throws DecryptionException, BuilderException, EncryptionException {
 
     // test using the default keyVersion builder
     AESKeyVersion keyversion = new AESKeyVersion.Builder().build();
@@ -54,8 +54,7 @@ public class SymmetricEncryptionTest {
     // test all keyVersion version length WITHOUT mode
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-      keyversion = new AESKeyVersion.Builder()
-          .keyVersionLengthInBytes(keyVersionLength)
+      keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
           .padding(Padding.PKCS5).build();
       testEncryptDecryptKeyVersion(keyversion);
 
@@ -67,8 +66,7 @@ public class SymmetricEncryptionTest {
     for (Integer keyVersionLength : new Integer[] {16, 24, 32}) {
       for (Mode mode : Mode.values()) {
         // test keyVersion version length of 16 and PKCS5 padding and ECB mode
-        keyversion = new AESKeyVersion.Builder()
-            .keyVersionLengthInBytes(keyVersionLength)
+        keyversion = new AESKeyVersion.Builder().keyVersionLengthInBytes(keyVersionLength)
             .padding(Padding.PKCS5).mode(mode).build();
         testEncryptDecryptKeyVersion(keyversion);
       }
@@ -94,7 +92,7 @@ public class SymmetricEncryptionTest {
        *test the encryption decryption OF BYTE ARRAYS
        */
 
-// encrypt the test string
+      // encrypt the test string
       byte[] encTxt = encryptString(keyVersion, testinput);
       // decrypt the message
       String result = decryptString(keyVersion, encTxt);
@@ -106,7 +104,7 @@ public class SymmetricEncryptionTest {
        *now test the encryption decryption STREAMS
        */
 
-// the input stream
+      // the input stream
       ByteArrayOutputStream inputStream = new ByteArrayOutputStream();
       // convert the test String to an input stream and encrypt it using the keyVersion
       SymmetricEncryption.encryptStream(keyVersion, new ByteArrayInputStream(testinput.getBytes()),

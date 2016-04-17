@@ -1,17 +1,15 @@
 /*
  * Copyright 2014 Google Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 
 package com.google.k2crypto.storage.driver;
@@ -20,8 +18,6 @@ import static org.junit.Assert.fail;
 
 import com.google.k2crypto.storage.driver.Driver;
 
-import org.junit.Before;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,13 +25,14 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
+import org.junit.Before;
+
 /**
  * Boilerplate class for a file-based storage driver JUnit test.
  *
  * @author darylseah@gmail.com (Daryl Seah)
  */
-public abstract class FileBasedDriverTest<T extends Driver>
-    extends BasicDriverTest<T> {
+public abstract class FileBasedDriverTest<T extends Driver> extends BasicDriverTest<T> {
 
   // Directory for the driver to read/write test key files
   private static final String TESTING_DIRECTORY = "./build/tmp/";
@@ -91,7 +88,8 @@ public abstract class FileBasedDriverTest<T extends Driver>
   /**
    * Initializes the working directory for test files.
    */
-  @Before public void setupTestDirectory() {
+  @Before
+  public void setupTestDirectory() {
     testingDir = new File(TESTING_DIRECTORY);
     testingDir.mkdirs();
     if (!testingDir.isDirectory() || !testingDir.canWrite()) {
@@ -120,11 +118,10 @@ public abstract class FileBasedDriverTest<T extends Driver>
     // Create an initial random filename
     char[] filename = new char[prefixLen + GENERATED_NAME_LENGTH + postfixLen];
     prefix.getChars(0, prefixLen, filename, 0);
-    postfix.getChars(
-        0, postfixLen, filename, GENERATED_NAME_LENGTH + prefixLen);
+    postfix.getChars(0, postfixLen, filename, GENERATED_NAME_LENGTH + prefixLen);
 
-    for (int i = GENERATED_NAME_LENGTH + prefixLen; --i >= prefixLen; ) {
-      filename[i] = (char)('A' + random.nextInt(26));
+    for (int i = GENERATED_NAME_LENGTH + prefixLen; --i >= prefixLen;) {
+      filename[i] = (char) ('A' + random.nextInt(26));
     }
 
     // Mutate one character each time until we get a non-existent file
@@ -132,7 +129,7 @@ public abstract class FileBasedDriverTest<T extends Driver>
     int countdown = MAX_GENERATION_ATTEMPTS;
     while ((file = new File(dir, new String(filename))).exists()) {
       filename[prefixLen + random.nextInt(GENERATED_NAME_LENGTH)] =
-          (char)('a' + random.nextInt(26));
+          (char) ('a' + random.nextInt(26));
       if (--countdown <= 0) {
         fail("Could not generate file!");
       }
@@ -156,10 +153,14 @@ public abstract class FileBasedDriverTest<T extends Driver>
     } catch (IOException ex) {
       throw new RuntimeException("Could not copy file", ex);
     } finally {
-      try { in.close(); }
-      catch (Exception ex) {}
-      try { out.close(); }
-      catch (Exception ex) {}
+      try {
+        in.close();
+      } catch (Exception ex) {
+      }
+      try {
+        out.close();
+      } catch (Exception ex) {
+      }
     }
   }
 
@@ -168,7 +169,7 @@ public abstract class FileBasedDriverTest<T extends Driver>
    *
    * @param files Files to delete.
    */
-  protected static void deleteAllOnExit(File ... files) {
+  protected static void deleteAllOnExit(File... files) {
     for (File f : files) {
       f.deleteOnExit();
     }
@@ -179,7 +180,7 @@ public abstract class FileBasedDriverTest<T extends Driver>
    *
    * @param files Files to delete.
    */
-  protected static void deleteAll(File ... files) {
+  protected static void deleteAll(File... files) {
     for (File f : files) {
       f.delete();
     }

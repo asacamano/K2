@@ -16,9 +16,9 @@ package com.google.k2crypto;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
 import java.util.HashSet;
+
+import org.junit.Test;
 
 /**
  * This class tests getting the algorithms that satisfy given security services in K2.

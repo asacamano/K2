@@ -18,17 +18,19 @@ import com.google.k2crypto.K2Context;
 import com.google.k2crypto.exceptions.KeyVersionException;
 import com.google.k2crypto.keyversions.KeyVersion.Builder;
 import com.google.k2crypto.keyversions.KeyVersionProto.Type;
-import com.google.protobuf.ExtensionRegistry;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import com.google.protobuf.ExtensionRegistry;
+
 /**
  * A key version implementation (class) that has been registered with K2.
  *
- * <p>This class is thread-safe.
+ * <p>
+ * This class is thread-safe.
  *
  * @author darylseah@gmail.com (Daryl Seah)
  */
@@ -71,31 +73,27 @@ public class RegisteredKeyVersion {
 
     // Check the Builder class
     try {
-      Class<?> builder = Class.forName(
-          kvClass.getName() + "$Builder", true, kvClass.getClassLoader());
+      Class<?> builder =
+          Class.forName(kvClass.getName() + "$Builder", true, kvClass.getClassLoader());
 
       if (!Builder.class.isAssignableFrom(builder)) {
         // The builder class does not extend KeyVersion.Builder
-        throw new KeyVersionException(
-            kvClass, KeyVersionException.Reason.BAD_PARENT);
-      } else if (!kvClass.isAssignableFrom(
-          builder.getMethod("build").getReturnType())) {
+        throw new KeyVersionException(kvClass, KeyVersionException.Reason.BAD_PARENT);
+      } else if (!kvClass.isAssignableFrom(builder.getMethod("build").getReturnType())) {
         // There is no build() method returning the key version type
-        throw new KeyVersionException(
-            kvClass, KeyVersionException.Reason.BAD_BUILD);
+        throw new KeyVersionException(kvClass, KeyVersionException.Reason.BAD_BUILD);
       }
 
       // The following constructor extraction is reflectively type checked
       @SuppressWarnings("unchecked")
       Constructor<? extends Builder> constructor =
-          (Constructor<? extends Builder>)builder.getDeclaredConstructor();
+          (Constructor<? extends Builder>) builder.getDeclaredConstructor();
 
       // Constructor can only throw Errors or RuntimeExceptions
       for (Class<?> exClass : constructor.getExceptionTypes()) {
         if (!RuntimeException.class.isAssignableFrom(exClass)
             && !Error.class.isAssignableFrom(exClass)) {
-          throw new KeyVersionException(
-              kvClass, KeyVersionException.Reason.ILLEGAL_THROWS);
+          throw new KeyVersionException(kvClass, KeyVersionException.Reason.ILLEGAL_THROWS);
         }
       }
 
@@ -105,47 +103,38 @@ public class RegisteredKeyVersion {
 
     } catch (ClassNotFoundException ex) {
       // The builder class was not found
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.NO_BUILDER);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.NO_BUILDER);
     } catch (NoSuchMethodException ex) {
       // This exception should only be thrown by the constructor check
       // (and not the build method check).
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.NO_CONSTRUCTOR);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.NO_CONSTRUCTOR);
     } catch (IllegalArgumentException e) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
     } catch (InstantiationException e) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
     } catch (IllegalAccessException e) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
     } catch (InvocationTargetException e) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
     }
 
     // Check the info annotation
     info = kvClass.getAnnotation(KeyVersionInfo.class);
     if (info == null) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.NO_METADATA);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.NO_METADATA);
     }
 
     // What we really need is the static registerAllExtensions() method on the
     // generated proto. We cannot verify that the proto really belongs to
     // the key version (or that it really is a generated proto).
     try {
-      registerProtoExtensions = info.proto()
-          .getMethod("registerAllExtensions", ExtensionRegistry.class);
+      registerProtoExtensions =
+          info.proto().getMethod("registerAllExtensions", ExtensionRegistry.class);
       if (!Modifier.isStatic(registerProtoExtensions.getModifiers())) {
-        throw new KeyVersionException(
-            kvClass, KeyVersionException.Reason.BAD_PROTO);
+        throw new KeyVersionException(kvClass, KeyVersionException.Reason.BAD_PROTO);
       }
     } catch (NoSuchMethodException ex) {
-      throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.BAD_PROTO);
+      throw new KeyVersionException(kvClass, KeyVersionException.Reason.BAD_PROTO);
     }
   }
 
@@ -179,9 +168,9 @@ public class RegisteredKeyVersion {
     // Re-throw throwables that do not need an explicit catch. (This should
     // not actually happen unless the builder has a flaky constructor.)
     if (t instanceof Error) {
-      throw (Error)t;
+      throw (Error) t;
     } else if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
+      throw (RuntimeException) t;
     } else {
       // This should not happen, owing to construction-time checks.
       // But, just in case
@@ -254,9 +243,8 @@ public class RegisteredKeyVersion {
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof RegisteredKeyVersion) {
-      RegisteredKeyVersion other = (RegisteredKeyVersion)obj;
-      return other.keyVersionClass.equals(keyVersionClass)
-          && other.context.equals(context);
+      RegisteredKeyVersion other = (RegisteredKeyVersion) obj;
+      return other.keyVersionClass.equals(keyVersionClass) && other.context.equals(context);
     }
     return false;
   }
