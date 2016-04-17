@@ -20,11 +20,20 @@ buildscript {
   repositories {
     mavenCentral()
   }
+  dependencies {
+    // See the spotless section below
+    classpath 'com.diffplug.gradle.spotless:spotless:1.3.3'
+  }
 }
+
+apply plugin: 'com.diffplug.gradle.spotless'
+apply plugin: 'java'
 
 subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
+  // See the spotless section below
+  apply plugin: 'com.diffplug.gradle.spotless'
 
   // The standard group for all projects
   group = 'com.google.k2'
@@ -49,5 +58,29 @@ subprojects {
     testCompile 'org.mockito:mockito-all:1.10.19'
   }
 
+  // Enfore code style using the spotless plugin
+  spotless {
+    java {
+	target project.fileTree(project.rootDir) {
+		include '**/*.java'
+		exclude 'protos-java/build/proto-java/**/*.*'
+	}
+      eclipseFormatFile rootProject.file('code-style/eclipse-java-google-style.xml')
+      importOrderFile   rootProject.file('code-style/eclipse.importorder')
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+    freshmark {
+      trimTrailingWhitespace()
+      indentWithSpaces(2)
+      endWithNewline()
+    }
+    format 'misc', {
+      target '**/*.gradle', '**/*.sh', '**/.gitignore'
+      indentWithSpaces(2)
+      trimTrailingWhitespace()
+      endWithNewline()
+    }
+  }
 }
 
