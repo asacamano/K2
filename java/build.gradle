@@ -26,8 +26,22 @@ buildscript {
   }
 }
 
-apply plugin: 'com.diffplug.gradle.spotless'
 apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'com.diffplug.gradle.spotless'
+
+// Set up a master project with useful links
+eclipse {
+  classpath {
+	  //default settings for downloading sources and Javadoc:
+	  downloadSources = true
+    downloadJavadoc = true
+  }
+  project {
+    name = 'K2 Java Master'
+    // linkedResource name: 'protos', type: '2', locationUri: 'file://../protos'
+  }
+}
 
 subprojects {
   apply plugin: 'java'
@@ -58,7 +72,16 @@ subprojects {
     testCompile 'org.mockito:mockito-all:1.10.19'
   }
 
-  // Enfore code style using the spotless plugin
+  // Common eclipse settings
+  eclipse {
+    classpath {
+	    //default settings for downloading sources and Javadoc:
+	    downloadSources = true
+	    downloadJavadoc = true
+    }
+  }
+
+  // Enforce code style using the Spotless plugin
   spotless {
     java {
 	target project.fileTree(project.rootDir) {

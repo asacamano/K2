@@ -26,8 +26,6 @@ buildscript {
   }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'gradleProtobufPlugin'
 
 // Magic to make proto compilation happen
