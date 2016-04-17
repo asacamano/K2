@@ -19,17 +19,18 @@ package com.google.k2crypto.storage;
 /**
  * Exception thrown when a store operation cannot be performed because of an
  * I/O or serialization/deserialization issue.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class StoreIOException extends StoreException {
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Reason why the StoreIOException was thrown. 
+   * Reason why the StoreIOException was thrown.
    */
   public static enum Reason {
     // NOTE: these reasons are specifically ordered from high-level to low-level
-    
+
     /**
      * A key version cannot be read because it is unregistered.
      * This is possibly a configuration error.
@@ -42,22 +43,22 @@ public class StoreIOException extends StoreException {
     SERIALIZATION_ERROR("The key could not be serialized."),
 
     /**
-     * The read bytes could not be parsed as a key. 
+     * The read bytes could not be parsed as a key.
      */
     DESERIALIZATION_ERROR("The key could not be deserialized/parsed."),
 
     /**
-     * A wrap key is required, and was not provided. 
+     * A wrap key is required, and was not provided.
      */
     WRAP_KEY_REQUIRED("A wrap key is required."),
-    
+
     /**
      * The provided wrap key cannot unwrap the stored key.
      */
     WRAP_KEY_WRONG("The provided wrap key is wrong."),
 
     /**
-     * A wrap key was provided, but is not needed. 
+     * A wrap key was provided, but is not needed.
      */
     WRAP_KEY_UNNECESSARY("The wrap key is not required."),
 
@@ -65,12 +66,12 @@ public class StoreIOException extends StoreException {
      * Error writing to a device/resource.
      */
     WRITE_ERROR("General write error."),
-    
+
     /**
      * Error reading from a device/resource.
      */
     READ_ERROR("General read error."),
-    
+
     /**
      * The key being read or written is too large for the driver to handle.
      */
@@ -80,16 +81,16 @@ public class StoreIOException extends StoreException {
      * Driver-specific error when reading/writing the key.
      */
     DRIVER_SPECIFIC("Driver-specific I/O error.");
-    
+
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-  
+
   private final Reason reason;
-  
+
   /**
    * Constructs a new StoreIOException.
    *
@@ -99,7 +100,7 @@ public class StoreIOException extends StoreException {
     super(reason.message);
     this.reason = reason;
   }
-  
+
   /**
    * Constructs a new StoreIOException with a cause.
    *
@@ -110,9 +111,9 @@ public class StoreIOException extends StoreException {
     super(reason.message, cause);
     this.reason = reason;
   }
-  
+
   /**
-   * Returns the reason for the exception. 
+   * Returns the reason for the exception.
    */
   public Reason getReason() {
     return reason;

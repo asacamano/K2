@@ -17,40 +17,41 @@
 package com.google.k2crypto.storage;
 
 /**
- * Exception thrown when the operation invoked is unsupported by the store. 
- * 
+ * Exception thrown when the operation invoked is unsupported by the store.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class UnsupportedByStoreException extends StoreException {
-  
+  private static final long serialVersionUID = 1L;
+
   /**
-   * Reason why the UnsupportedByStoreException was thrown. 
+   * Reason why the UnsupportedByStoreException was thrown.
    */
   public static enum Reason {
     /**
-     * The store does not support wrapping of keys. 
+     * The store does not support wrapping of keys.
      */
     NO_WRAP("Store does not support key wrapping."),
-    
+
     /**
      * The store is read-only.
      */
     READ_ONLY("Store is read-only."),
-    
+
     /**
      * The store is write-only.
      */
     WRITE_ONLY("Store is write-only.");
 
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-  
+
   private final Reason reason;
-  
+
   /**
    * Constructs a new UnsupportedByStoreException.
    *
@@ -60,9 +61,9 @@ public class UnsupportedByStoreException extends StoreException {
     super(reason.message);
     this.reason = reason;
   }
-  
+
   /**
-   * Returns the reason for the exception. 
+   * Returns the reason for the exception.
    */
   public Reason getReason() {
     return reason;

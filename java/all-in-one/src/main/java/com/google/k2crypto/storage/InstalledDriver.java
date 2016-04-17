@@ -29,28 +29,28 @@ import java.util.regex.Pattern;
 
 /**
  * A driver that has been installed into the storage system.
- * 
+ *
  * <p>This class is thread-safe.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class InstalledDriver {
-  
+
   // Regex matching a valid URI scheme.
   // (Same as http://tools.ietf.org/html/rfc3986#section-3.1,
   //  except we do not accept upper-case.)
   private static final Pattern LEGAL_ID =
       Pattern.compile("^[a-z][a-z0-9\\+\\-\\.]*$");
-  
+
   // Context for the current K2 session
   private final K2Context context;
-  
+
   // Class of the driver implementation.
   private final Class<? extends Driver> driverClass;
-  
+
   // Constructor obtained from the driver class
   private final Constructor<? extends Driver> constructor;
-  
+
   // Info annotation obtained from the driver class
   private final DriverInfo info;
 
@@ -58,14 +58,14 @@ public class InstalledDriver {
   private final boolean canRead;
   private final boolean canWrite;
   private final boolean wrapSupported;
-  
+
   /**
    * Constructs an installed driver from a class and verifies that it conforms
    * to the expected structure.
-   * 
+   *
    * @param context Context for the K2 session.
    * @param driverClass Class of the driver implementation to install.
-   * 
+   *
    * @throws StorageDriverException if the driver does not conform.
    */
   InstalledDriver(K2Context context, Class<? extends Driver> driverClass)
@@ -75,19 +75,19 @@ public class InstalledDriver {
     } else if (driverClass == null) {
       throw new NullPointerException("driverClass");
     }
-    
+
     this.context = context;
     this.driverClass = driverClass;
-    
+
     // Determine what the driver can do
     this.canRead = ReadableDriver.class.isAssignableFrom(driverClass);
     this.canWrite = WritableDriver.class.isAssignableFrom(driverClass);
     this.wrapSupported = WrappingDriver.class.isAssignableFrom(driverClass);
-    
+
     if (!canRead && !canWrite) {
       // A driver that can neither read nor write is literally useless
       throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.USELESS);      
+          driverClass, StorageDriverException.Reason.USELESS);
     }
 
     try {
@@ -103,12 +103,24 @@ public class InstalledDriver {
       }
       // Try to instantiate the driver (should work if driver is accessible)
       constructor.newInstance();
-      
+
     } catch (NoSuchMethodException ex) {
       // Constructor not found
       throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.NO_CONSTRUCTOR);        
-    } catch (ReflectiveOperationException ex) {
+          driverClass, StorageDriverException.Reason.NO_CONSTRUCTOR);
+    } catch (InvocationTargetException ex) {
+      // Instantiation failed
+      throw new StorageDriverException(
+          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+    } catch (IllegalArgumentException ex) {
+      // Instantiation failed
+      throw new StorageDriverException(
+          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+    } catch (InstantiationException ex) {
+      // Instantiation failed
+      throw new StorageDriverException(
+          driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
+    } catch (IllegalAccessException ex) {
       // Instantiation failed
       throw new StorageDriverException(
           driverClass, StorageDriverException.Reason.INSTANTIATE_FAIL);
@@ -120,14 +132,14 @@ public class InstalledDriver {
       throw new StorageDriverException(
           driverClass, StorageDriverException.Reason.NO_METADATA);
     }
-    
+
     // Check that driver identifier is legal
     if (!LEGAL_ID.matcher(info.id()).matches()) {
       throw new StorageDriverException(
-          driverClass, StorageDriverException.Reason.ILLEGAL_ID);        
+          driverClass, StorageDriverException.Reason.ILLEGAL_ID);
     }
   }
-  
+
   /**
    * Instantiates a new store (driver) from the driver installation.
    */
@@ -138,93 +150,101 @@ public class InstalledDriver {
       driver.initialize(context);
       return driver;
     } catch (InvocationTargetException ex) {
-      Throwable t = ex.getCause();
-      // Re-throw throwables that do not need an explicit catch. (This should
-      // not actually happen unless the driver has a flaky constructor.)
-      if (t instanceof Error) {
-        throw (Error)t;
-      } else if (t instanceof RuntimeException) {
-        throw (RuntimeException)t;
-      } else {
-        // This should not happen, owing to construction-time checks.
-        throw new AssertionError("Should not happen!", t);
-      }
-    } catch (ReflectiveOperationException ex) {
-      // Should not happen because we test instantiate in the constructor...
-      throw new AssertionError("Should not happen!", ex);
+      return handleException(ex);
+    } catch (IllegalArgumentException ex) {
+      return handleException(ex);
+    } catch (InstantiationException ex) {
+      return handleException(ex);
+    } catch (IllegalAccessException ex) {
+      return handleException(ex);
     }
   }
-  
+
+  private Driver handleException(Exception ex) throws Error, AssertionError {
+    Throwable t = ex.getCause();
+    // Re-throw throwables that do not need an explicit catch. (This should
+    // not actually happen unless the driver has a flaky constructor.)
+    if (t instanceof Error) {
+      throw (Error)t;
+    } else if (t instanceof RuntimeException) {
+      throw (RuntimeException)t;
+    } else {
+      // This should not happen, owing to construction-time checks.
+      // But, just in case
+      throw new RuntimeException("Unexpected error detected:", t);
+    }
+  }
+
   /**
    * Returns the context used when the driver was installed.
    */
   K2Context getContext() {
     return context;
   }
-  
+
   /**
    * Returns the driver class.
    */
   public Class<? extends Driver> getDriverClass() {
     return driverClass;
   }
-  
+
   /**
    * Returns the identifier of the driver.
    */
   public String getId() {
     return info.id();
   }
-  
+
   /**
    * Returns the descriptive name of the driver.
    */
   public String getName() {
     return info.name();
   }
-  
+
   /**
    * Returns the version of the driver.
    */
   public String getVersion() {
     return info.version();
   }
-  
+
   /**
-   * Returns {@code true} if the driver can read keys, {@code false} otherwise. 
+   * Returns {@code true} if the driver can read keys, {@code false} otherwise.
    */
   public boolean canRead() {
     return canRead;
   }
-  
+
   /**
    * Returns whether the driver can only read keys and not write them.
    */
   public boolean isReadOnly() {
     return canRead && !canWrite;
   }
-  
+
   /**
-   * Returns {@code true} if the driver can write keys, {@code false} otherwise. 
+   * Returns {@code true} if the driver can write keys, {@code false} otherwise.
    */
   public boolean canWrite() {
     return canWrite;
   }
-  
+
   /**
    * Returns whether the driver can only write keys and not read them.
    */
   public boolean isWriteOnly() {
     return canWrite && !canRead;
   }
-  
+
   /**
    * Returns whether the driver supports wrapped (encrypted) keys.
    */
   public boolean isWrapSupported() {
     return wrapSupported;
   }
-  
+
   /**
    * Returns the hash-code for the driver, which is the hash of the driver
    * class.
@@ -233,15 +253,15 @@ public class InstalledDriver {
   public int hashCode() {
     return driverClass.hashCode();
   }
-  
+
   /**
    * Tests the driver for equality with an object.
-   * 
+   *
    * @param obj Object to compare to.
-   * 
+   *
    * @return {@code true} if, and only if, the object is also an
    *         InstalledDriver and it has the same driver class and context as
-   *         this one. 
+   *         this one.
    */
   @Override
   public boolean equals(Object obj) {
@@ -252,7 +272,7 @@ public class InstalledDriver {
     }
     return false;
   }
-  
+
   /**
    * @see Object#toString()
    */

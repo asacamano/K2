@@ -27,35 +27,35 @@ import java.lang.reflect.Modifier;
 
 /**
  * A key version implementation (class) that has been registered with K2.
- *  
+ *
  * <p>This class is thread-safe.
  *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class RegisteredKeyVersion {
-  
+
   // Context for the current K2 session
   private final K2Context context;
 
   // Class of the registered key version implementation
   private final Class<? extends KeyVersion> keyVersionClass;
-  
+
   // Builder constructor derived from the KeyVersion class
   private final Constructor<? extends Builder> builderConstructor;
-  
+
   // Derived method that will register all proto extensions for the key version
   private final Method registerProtoExtensions;
-  
+
   // Meta-data annotation on the KeyVersion class
   private final KeyVersionInfo info;
-  
+
   /**
    * Constructs a registered key version from a class and verifies that it
    * conforms to the expected structure.
-   * 
+   *
    * @param context Context for the K2 session.
    * @param kvClass Class of the key version implementation.
-   * 
+   *
    * @throws KeyVersionException if the key version class does not conform.
    */
   RegisteredKeyVersion(K2Context context, Class<? extends KeyVersion> kvClass)
@@ -65,7 +65,7 @@ public class RegisteredKeyVersion {
     } else if (kvClass == null) {
       throw new NullPointerException("kvClass");
     }
-    
+
     this.context = context;
     this.keyVersionClass = kvClass;
 
@@ -73,7 +73,7 @@ public class RegisteredKeyVersion {
     try {
       Class<?> builder = Class.forName(
           kvClass.getName() + "$Builder", true, kvClass.getClassLoader());
-      
+
       if (!Builder.class.isAssignableFrom(builder)) {
         // The builder class does not extend KeyVersion.Builder
         throw new KeyVersionException(
@@ -82,14 +82,14 @@ public class RegisteredKeyVersion {
           builder.getMethod("build").getReturnType())) {
         // There is no build() method returning the key version type
         throw new KeyVersionException(
-            kvClass, KeyVersionException.Reason.BAD_BUILD);        
+            kvClass, KeyVersionException.Reason.BAD_BUILD);
       }
 
       // The following constructor extraction is reflectively type checked
       @SuppressWarnings("unchecked")
       Constructor<? extends Builder> constructor =
           (Constructor<? extends Builder>)builder.getDeclaredConstructor();
-      
+
       // Constructor can only throw Errors or RuntimeExceptions
       for (Class<?> exClass : constructor.getExceptionTypes()) {
         if (!RuntimeException.class.isAssignableFrom(exClass)
@@ -102,32 +102,40 @@ public class RegisteredKeyVersion {
       // Check that the builder can instantiate (should not be much overhead)
       constructor.newInstance();
       builderConstructor = constructor;
-      
+
     } catch (ClassNotFoundException ex) {
       // The builder class was not found
       throw new KeyVersionException(
           kvClass, KeyVersionException.Reason.NO_BUILDER);
     } catch (NoSuchMethodException ex) {
       // This exception should only be thrown by the constructor check
-      // (and not the build method check). 
+      // (and not the build method check).
       throw new KeyVersionException(
           kvClass, KeyVersionException.Reason.NO_CONSTRUCTOR);
-    } catch (ReflectiveOperationException ex) {
-      // Builder instantiation test failed
+    } catch (IllegalArgumentException e) {
       throw new KeyVersionException(
-          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL);
+          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+    } catch (InstantiationException e) {
+      throw new KeyVersionException(
+          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+    } catch (IllegalAccessException e) {
+      throw new KeyVersionException(
+          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
+    } catch (InvocationTargetException e) {
+      throw new KeyVersionException(
+          kvClass, KeyVersionException.Reason.INSTANTIATE_FAIL, e);
     }
-    
+
     // Check the info annotation
     info = kvClass.getAnnotation(KeyVersionInfo.class);
     if (info == null) {
       throw new KeyVersionException(
           kvClass, KeyVersionException.Reason.NO_METADATA);
     }
-    
+
     // What we really need is the static registerAllExtensions() method on the
     // generated proto. We cannot verify that the proto really belongs to
-    // the key version (or that it really is a generated proto). 
+    // the key version (or that it really is a generated proto).
     try {
       registerProtoExtensions = info.proto()
           .getMethod("registerAllExtensions", ExtensionRegistry.class);
@@ -156,68 +164,75 @@ public class RegisteredKeyVersion {
       // Use reflection to instantiate the builder
       return builderConstructor.newInstance();
     } catch (InvocationTargetException ex) {
-      Throwable t = ex.getCause();
-      // Re-throw throwables that do not need an explicit catch. (This should
-      // not actually happen unless the builder has a flaky constructor.)
-      if (t instanceof Error) {
-        throw (Error)t;
-      } else if (t instanceof RuntimeException) {
-        throw (RuntimeException)t;
-      } else {
-        // This should not happen, owing to construction-time checks.
-        throw new AssertionError("Should not happen!", t);
-      }
-    } catch (ReflectiveOperationException ex) {
-      // Should not happen because we test instantiate in the constructor...
-      throw new AssertionError("Should not happen!", ex);
+      return handleReflectionExecption(ex);
+    } catch (IllegalArgumentException ex) {
+      return handleReflectionExecption(ex);
+    } catch (InstantiationException ex) {
+      return handleReflectionExecption(ex);
+    } catch (IllegalAccessException ex) {
+      return handleReflectionExecption(ex);
     }
   }
-  
+
+  private Builder handleReflectionExecption(Exception ex) throws Error {
+    Throwable t = ex.getCause();
+    // Re-throw throwables that do not need an explicit catch. (This should
+    // not actually happen unless the builder has a flaky constructor.)
+    if (t instanceof Error) {
+      throw (Error)t;
+    } else if (t instanceof RuntimeException) {
+      throw (RuntimeException)t;
+    } else {
+      // This should not happen, owing to construction-time checks.
+      // But, just in case
+      throw new RuntimeException("Unexpected error detected:", t);
+    }
+  }
+
   /**
    * Registers all proto extensions required by the key version.
-   * 
+   *
    * @param registry Proto extension registry to use.
-   * 
-   * @throws ReflectiveOperationException if something goes wrong with
+   * @throws InvocationTargetException if something goes wrong with
+   *     reflectively calling the method on the generated proto.
+   * @throws IllegalAccessException if something goes wrong with
+   *     reflectively calling the method on the generated proto.
+   * @throws IllegalArgumentException if something goes wrong with
    *     reflectively calling the method on the generated proto.
    */
   void registerProtoExtensions(ExtensionRegistry registry)
-      throws ReflectiveOperationException {
-    try {
-      registerProtoExtensions.invoke(null, registry);
-    } catch (RuntimeException ex) {
-      throw new ReflectiveOperationException(ex);
-    }
+      throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    registerProtoExtensions.invoke(null, registry);
   }
-  
+
   /**
    * Returns the proto type of the key version.
    */
   public Type getType() {
     return info.type();
   }
-  
+
   /**
-   * Returns the class implementing the key version. 
+   * Returns the class implementing the key version.
    */
   public Class<? extends KeyVersion> getKeyVersionClass() {
     return keyVersionClass;
   }
-  
+
   /**
-   * Returns the builder class for the key version. 
+   * Returns the builder class for the key version.
    */
   public Class<? extends Builder> getBuilderClass() {
     return builderConstructor.getDeclaringClass();
   }
-  
+
   /**
    * Returns the generated protocol buffer class for the key version.
    */
   public Class<?> getProtoClass() {
     return info.proto();
   }
-  
+
   /**
    * Returns the hash-code for the registered key version, which is the hash
    * of the key version class.
@@ -226,15 +241,15 @@ public class RegisteredKeyVersion {
   public int hashCode() {
     return keyVersionClass.hashCode();
   }
-  
+
   /**
    * Tests the registered key version for equality with an object.
-   * 
+   *
    * @param obj Object to compare to.
-   * 
+   *
    * @return {@code true} if, and only if, the object is also a
    *         RegisteredKeyVersion and it has the same key version class and
-   *         context as this one. 
+   *         context as this one.
    */
   @Override
   public boolean equals(Object obj) {
@@ -245,7 +260,7 @@ public class RegisteredKeyVersion {
     }
     return false;
   }
-  
+
   /**
    * @see Object#toString()
    */

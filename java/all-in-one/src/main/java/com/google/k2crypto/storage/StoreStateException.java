@@ -17,38 +17,39 @@
 package com.google.k2crypto.storage;
 
 /**
- * Exception thrown when the store is in a state unsuitable for the operation. 
- * 
+ * Exception thrown when the store is in a state unsuitable for the operation.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class StoreStateException extends StoreException {
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Reason why the StoreStateException was thrown. 
+   * Reason why the StoreStateException was thrown.
    */
   public static enum Reason {
     /**
-     * The store cannot perform the operation because it is not open. 
+     * The store cannot perform the operation because it is not open.
      */
     NOT_OPEN("Store not open."),
-    
+
     /**
      * The store is already open.
      */
     ALREADY_OPEN("Store already open."),
-    
+
     /**
      * The store is already closed.
      */
     ALREADY_CLOSED("Store already closed.");
-    
+
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-  
+
   private final Reason reason;
 
   /**
@@ -62,7 +63,7 @@ public class StoreStateException extends StoreException {
   }
 
   /**
-   * Returns the reason for the state exception. 
+   * Returns the reason for the state exception.
    */
   public Reason getReason() {
     return reason;

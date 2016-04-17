@@ -20,40 +20,41 @@ import com.google.k2crypto.K2Exception;
 import com.google.k2crypto.Key;
 
 /**
- * Exception thrown when the protobuf data for a {@link Key} is invalid. 
- * 
+ * Exception thrown when the protobuf data for a {@link Key} is invalid.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class InvalidKeyDataException extends K2Exception {
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Reason why the InvalidKeyDataException was thrown. 
+   * Reason why the InvalidKeyDataException was thrown.
    */
-  public static enum Reason {    
+  public static enum Reason {
     /**
      * Some core bytes in the key could not be parsed as a protobuf.
      */
     PROTO_PARSE("Core cannot be parsed as a protobuf."),
-    
+
     /**
-     * A key version in the key failed to build. 
+     * A key version in the key failed to build.
      */
     KEY_VERSION_BUILD("Key version failed to build."),
-    
+
     /**
      * The pointer to the primary key version is wrong.
      */
     CORRUPTED_PRIMARY("The primary key version is corrupted.");
 
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-  
+
   private final Reason reason;
-  
+
   /**
    * Constructs a new InvalidKeyDataException.
    *
@@ -64,9 +65,9 @@ public class InvalidKeyDataException extends K2Exception {
     super(reason.message, cause);
     this.reason = reason;
   }
-  
+
   /**
-   * Returns the reason the key or key version data is invalid. 
+   * Returns the reason the key or key version data is invalid.
    */
   public Reason getReason() {
     return reason;

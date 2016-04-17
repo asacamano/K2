@@ -19,14 +19,15 @@ package com.google.k2crypto.storage;
 import com.google.k2crypto.K2Exception;
 
 /**
- * Exception thrown when there is an issue with an operation on a {@link Store}. 
- * 
+ * Exception thrown when there is an issue with an operation on a {@link Store}.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class StoreException extends K2Exception {
-        
+  private static final long serialVersionUID = 1L;
+
   private Store store = null;
-  
+
   /**
    * Constructs a new StoreException with the specified message.
    *
@@ -35,7 +36,7 @@ public class StoreException extends K2Exception {
   public StoreException(String message) {
     super(message);
   }
-  
+
   /**
    * Constructs a new StoreException with the specified message and cause.
    *
@@ -45,10 +46,10 @@ public class StoreException extends K2Exception {
   public StoreException(String message, Throwable cause) {
     super(message, cause);
   }
-  
+
   /**
    * Sets the store that the exception occurred on.
-   * 
+   *
    * @param store Store that triggered the exception.
    */
   void setStore(Store store) {
@@ -57,14 +58,14 @@ public class StoreException extends K2Exception {
     }
     this.store = store;
   }
-  
+
   /**
    * Returns the store that the exception occurred on.
    */
   public Store getStore() {
     return store;
   }
-  
+
   /**
    * Returns the message augmented with store location information.
    */

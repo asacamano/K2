@@ -24,6 +24,7 @@ import com.google.k2crypto.K2Exception;
  */
 
 public class BuilderException extends K2Exception {
+  private static final long serialVersionUID = 1L;
 
   /**
    * Constructs a new BuilderException with the specified message.

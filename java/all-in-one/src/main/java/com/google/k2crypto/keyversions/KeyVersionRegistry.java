@@ -20,6 +20,7 @@ import com.google.k2crypto.exceptions.UnregisteredKeyVersionException;
 import com.google.k2crypto.keyversions.KeyVersionProto.Type;
 import com.google.protobuf.ExtensionRegistry;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -28,36 +29,36 @@ import java.util.Map;
 
 /**
  * A registry of available {@link KeyVersion} implementations.
- * 
+ *
  * <p>This class is thread-safe.
  *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class KeyVersionRegistry {
-  
+
   // Context for the current K2 session
   private final K2Context context;
 
   // Mapping of key version type to the registered (and verified) key version.
   private final Map<Type, RegisteredKeyVersion> keyVersions =
       new LinkedHashMap<KeyVersionProto.Type, RegisteredKeyVersion>();
-  
+
   // Cached list of all registered key versions
   private List<RegisteredKeyVersion> cachedKeyVersionList;
-  
-  // Cached proto extension registry 
+
+  // Cached proto extension registry
   private ExtensionRegistry cachedProtoExtensions;
-  
+
   /**
    * Constructs a KeyVersionRegistry for the given context.
-   * 
+   *
    * @param context Context of the current K2 session.
    */
   public KeyVersionRegistry(K2Context context) {
     this.context = context;
     invalidateCaches();
   }
-  
+
   /**
    * Invalidates the cached data on the registry.
    * Must be called whenever the key version map changes.
@@ -79,13 +80,13 @@ public class KeyVersionRegistry {
   /**
    * Constructs a {@link KeyVersion.Builder} that will build a key version of
    * the specified type.
-   * 
+   *
    * @param type Type to build.
-   * 
+   *
    * @return a builder for the specified type.
-   * 
+   *
    * @throws UnregisteredKeyVersionException if a key version implementation
-   *     for the type has not been registered. 
+   *     for the type has not been registered.
    */
   public KeyVersion.Builder newBuilder(Type type)
       throws UnregisteredKeyVersionException {
@@ -101,12 +102,12 @@ public class KeyVersionRegistry {
     }
     return regKeyVersion.newBuilder();
   }
-  
+
   /**
    * Returns whether a type has been registered.
-   *  
+   *
    * @param type Type to check.
-   * 
+   *
    * @return {@code true} if the type is registered, {@code false} otherwise.
    */
   public boolean isRegistered(Type type) {
@@ -117,12 +118,12 @@ public class KeyVersionRegistry {
       return keyVersions.containsKey(type);
     }
   }
-  
+
   /**
    * Returns the registration information for the given type.
-   * 
+   *
    * @param type Type to check.
-   * 
+   *
    * @return the {@link RegisteredKeyVersion} object of the type, or null if
    *     the type has not been registered.
    */
@@ -132,9 +133,9 @@ public class KeyVersionRegistry {
     }
     synchronized (keyVersions) {
       return keyVersions.get(type);
-    }    
+    }
   }
-  
+
   /**
    * Returns a registry of protocol buffer extensions of all the currently
    * registered key versions.
@@ -147,11 +148,21 @@ public class KeyVersionRegistry {
         for (RegisteredKeyVersion rkv : getRegisteredKeyVersions()) {
           try {
             rkv.registerProtoExtensions(registry);
-          } catch (ReflectiveOperationException ex) {
+          } catch (IllegalArgumentException e) {
             // Might get this if the proto is broken. Just print trace and
             // continue.
-            // TODO(darylseah): Perhaps log this? 
-            ex.printStackTrace();
+            // TODO(darylseah): Perhaps log this?
+            e.printStackTrace();
+          } catch (IllegalAccessException e) {
+            // Might get this if the proto is broken. Just print trace and
+            // continue.
+            // TODO(darylseah): Perhaps log this?
+            e.printStackTrace();
+          } catch (InvocationTargetException e) {
+            // Might get this if the proto is broken. Just print trace and
+            // continue.
+            // TODO(darylseah): Perhaps log this?
+            e.printStackTrace();
           }
         }
         registry = registry.getUnmodifiable();
@@ -160,16 +171,16 @@ public class KeyVersionRegistry {
       return registry;
     }
   }
-  
+
   /**
    * Registers a key version.
-   * 
+   *
    * @param kvClass Class of the key version implementation to register.
    *                See {@link KeyVersion} for specifications.
-   * 
+   *
    * @return {@link RegisteredKeyVersion} if successfully registered,
    *         {@code null} if a key version of the type is already registered.
-   * 
+   *
    * @throws KeyVersionException if there is a problem with the key version
    *                             implementation.
    */
@@ -182,7 +193,7 @@ public class KeyVersionRegistry {
     RegisteredKeyVersion regKeyVersion =
         new RegisteredKeyVersion(context, kvClass);
     Type type = regKeyVersion.getType();
-    
+
     synchronized (keyVersions) {
       if (keyVersions.containsKey(type)) {
         return null;
@@ -192,12 +203,12 @@ public class KeyVersionRegistry {
     }
     return regKeyVersion;
   }
-  
+
   /**
    * Unregisters a key version.
-   * 
+   *
    * @param type Type of the key version to unregister.
-   * 
+   *
    * @return {@code true} if successfully unregistered, {@code false} if no
    *         registered type exists.
    */
@@ -213,7 +224,7 @@ public class KeyVersionRegistry {
     }
     return false;
   }
-  
+
   /**
    * Returns an immutable thread-safe list of the currently registered key
    * versions, in registration order.

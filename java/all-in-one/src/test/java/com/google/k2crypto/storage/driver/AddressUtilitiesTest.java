@@ -29,24 +29,24 @@ import org.junit.runners.JUnit4;
 
 /**
  * Unit tests for the address utility methods.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 @RunWith(JUnit4.class)
 public class AddressUtilitiesTest {
-  
+
   /**
    * Tests the encodeConvenience(String) method.
    */
   @Test public final void testEncodeConvenience() {
     // Check empty string
     assertEquals("", AddressUtilities.encodeConvenience(""));
-    
+
     // Substrings that are invariant on encoding
     final String[] identities = {
         "a", "A", "9", "%20", "%25", "%fA", "%Af", "%09", "%90", "%0A", "%a9"
     };
-    
+
     // Check identity encodings and 2-up sequences
     for (String id : identities) {
       assertEquals(id, AddressUtilities.encodeConvenience(id));
@@ -55,8 +55,8 @@ public class AddressUtilitiesTest {
         assertEquals(tmp, AddressUtilities.encodeConvenience(tmp));
       }
     }
-    
-    // Input substrings and encoded results 
+
+    // Input substrings and encoded results
     final String[] input = {
         "", " ",   "%",   "%G",   "%g",   "%0G",   "%0g"
     };
@@ -64,7 +64,7 @@ public class AddressUtilitiesTest {
         "", "%20", "%25", "%25G", "%25g", "%250G", "%250g"
     };
     assertEquals(input.length, encoded.length);
-    
+
     // Check individual encoded results and 2-up sequences
     // (exclude initial empty string)
     for (int i = 1; i < input.length; ++i) {
@@ -87,7 +87,7 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Tests the decodeUnreserved(String) and decodeUnreserved(URI) methods.
    */
@@ -99,20 +99,20 @@ public class AddressUtilitiesTest {
         AddressUtilities.decodeUnreserved("%41%49%4A%4a%4F%4f%50%59%5A%5a"));
     assertEquals("aijjoopyzz",
         AddressUtilities.decodeUnreserved("%61%69%6A%6a%6F%6f%70%79%7A%7a"));
-    
+
     // Check that values just beyond unreserved ranges are not decoded
     String identity = "%40%5B %60%7B %2F%3A";
     assertEquals(identity, AddressUtilities.decodeUnreserved(identity));
     identity = identity.toLowerCase();
     assertEquals(identity, AddressUtilities.decodeUnreserved(identity));
-    
+
     // In particular, reserved and invalid characters MUST NOT be decoded
-    // because they can change how (or whether) the URI is interpreted 
+    // because they can change how (or whether) the URI is interpreted
     identity = "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D %20%25";
     assertEquals(identity, AddressUtilities.decodeUnreserved(identity));
     identity = identity.toLowerCase();
     assertEquals(identity, AddressUtilities.decodeUnreserved(identity));
-    
+
     // The URI version of the method should just direct to the string version,
     // but we do a broad test just to make sure.
     assertEquals(
@@ -150,7 +150,7 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Tests the checkNoUser(URI) method.
    */
@@ -242,7 +242,7 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Tests the checkNoQuery(URI) method.
    */
@@ -254,7 +254,7 @@ public class AddressUtilitiesTest {
       try {
         AddressUtilities.checkNoQuery(URI.create(address));
       } catch (IllegalAddressException ex) {
-        throw new AssertionError("Address is acceptable: " + address, ex);
+        throw new RuntimeException("Address is acceptable: " + address, ex);
       }
     }
     // Rejection cases
@@ -284,7 +284,7 @@ public class AddressUtilitiesTest {
       try {
         AddressUtilities.checkNoFragment(URI.create(address));
       } catch (IllegalAddressException ex) {
-        throw new AssertionError("Address is acceptable: " + address, ex);
+        throw new RuntimeException("Address is acceptable: " + address, ex);
       }
     }
     // Rejection cases
@@ -312,8 +312,8 @@ public class AddressUtilitiesTest {
     checkExtractHost("1.1.1.1", "//1.1.1.1:0");
     checkExtractHost("255.255.255.255", "//255.255.255.255#f");
     checkExtractHost("[0:0:0:0:0:0:0:0]", "ipv6://[0:0:0:0:0:0:0:0]:1?q");
-    
-    // Rejection cases    
+
+    // Rejection cases
     for (String address : new String[] {
         "k2:p?q#f", "p?q#f", "h", ""
     }) {
@@ -328,10 +328,10 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Checks that the extractHost method returns the expected value.
-   * 
+   *
    * @param expected Expected host value.
    * @param address Input address.
    */
@@ -340,10 +340,10 @@ public class AddressUtilitiesTest {
       assertEquals(
           expected, AddressUtilities.extractHost(URI.create(address)));
     } catch (IllegalAddressException ex) {
-      throw new AssertionError("Address is acceptable: " + address, ex);
-    }    
+      throw new RuntimeException("Address is acceptable: " + address, ex);
+    }
   }
-  
+
   /**
    * Tests the extractRawPath(URI) method.
    */
@@ -352,8 +352,8 @@ public class AddressUtilitiesTest {
     checkExtractRawPath("/", "k2:///");
     checkExtractRawPath("/./p/../", "file:/./p/../");
     checkExtractRawPath("/%20", "k2://u@h:1/%20?q#f");
-    
-    // Rejection cases    
+
+    // Rejection cases
     for (String address : new String[] {
         "k2://u@h:1?q#f", "//h:1", "?q#f", ""
     }) {
@@ -368,10 +368,10 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Checks that the extractRawPath method returns the expected value.
-   * 
+   *
    * @param expected Expected path value.
    * @param address Input address.
    */
@@ -380,10 +380,10 @@ public class AddressUtilitiesTest {
       assertEquals(
           expected, AddressUtilities.extractRawPath(URI.create(address)));
     } catch (IllegalAddressException ex) {
-      throw new AssertionError("Address is acceptable: " + address, ex);
-    }    
+      throw new RuntimeException("Address is acceptable: " + address, ex);
+    }
   }
-  
+
   /**
    * Tests the extractRawQuery(URI) method.
    */
@@ -393,7 +393,7 @@ public class AddressUtilitiesTest {
     checkExtractRawQuery("q", "k2://u@h:1/p?q#f");
     checkExtractRawQuery("+&%20=x", "?+&%20=x");
     checkExtractRawQuery("%20", "/%3Fp?%20#f");
-    
+
     // Rejection cases
     for (String address : new String[] {
         "k2://u@h:1/p?#f", "//h:1/p", "#f", "?", "%3Fq", ""
@@ -409,10 +409,10 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Checks that the extractRawQuery method returns the expected value.
-   * 
+   *
    * @param expected Expected query value.
    * @param address Input address.
    */
@@ -421,8 +421,8 @@ public class AddressUtilitiesTest {
       assertEquals(
           expected, AddressUtilities.extractRawQuery(URI.create(address)));
     } catch (IllegalAddressException ex) {
-      throw new AssertionError("Address is acceptable: " + address, ex);
-    }    
+      throw new RuntimeException("Address is acceptable: " + address, ex);
+    }
   }
 
   /**
@@ -434,7 +434,7 @@ public class AddressUtilitiesTest {
     checkExtractFragment("0", "k2://u@h:1/p?q#0");
     checkExtractFragment(" ", "#%20");
     checkExtractFragment("f +", "?%23q#f%20+");
-    
+
     // Rejection cases
     for (String address : new String[] {
         "k2://u@h:1/p?q#", "//h:1/p?q", "#", "%23f", ""
@@ -450,10 +450,10 @@ public class AddressUtilitiesTest {
       }
     }
   }
-  
+
   /**
    * Checks that the extractFragment method returns the expected value.
-   * 
+   *
    * @param expected Expected fragment value.
    * @param address Input address.
    */
@@ -462,7 +462,7 @@ public class AddressUtilitiesTest {
       assertEquals(
           expected, AddressUtilities.extractFragment(URI.create(address)));
     } catch (IllegalAddressException ex) {
-      throw new AssertionError("Address is acceptable: " + address, ex);
-    }    
+      throw new RuntimeException("Address is acceptable: " + address, ex);
+    }
   }
 }

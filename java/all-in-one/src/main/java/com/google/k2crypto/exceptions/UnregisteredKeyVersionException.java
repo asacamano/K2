@@ -21,13 +21,14 @@ import com.google.k2crypto.keyversions.KeyVersionProto.Type;
 
 /**
  * Exception thrown when a required KeyVersion type is unregistered.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class UnregisteredKeyVersionException extends K2Exception {
-  
+  private static final long serialVersionUID = 1L;
+
   private final Type type;
-  
+
   /**
    * Constructs a new UnregisteredKeyVersionException.
    *
@@ -37,7 +38,7 @@ public class UnregisteredKeyVersionException extends K2Exception {
     super(type.name());
     this.type = type;
   }
-  
+
   /**
    * Returns the unregistered type.
    */

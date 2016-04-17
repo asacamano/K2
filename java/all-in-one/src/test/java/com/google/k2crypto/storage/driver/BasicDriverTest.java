@@ -45,33 +45,33 @@ import java.util.Random;
 
 /**
  * Boilerplate class for a storage driver JUnit test.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 @RunWith(JUnit4.class)
 public abstract class BasicDriverTest<T extends Driver> {
 
   /**
-   * An empty key (immutable) for use in testing. 
+   * An empty key (immutable) for use in testing.
    */
   protected static final Key EMPTY_KEY = new Key();
-  
+
   /**
-   * A mock key (immutable) for use in testing. 
-   */  
-  protected static final Key MOCK_KEY = 
-      new Key(new MockKeyVersion.Builder().comments("testing key").build()); 
-  
+   * A mock key (immutable) for use in testing.
+   */
+  protected static final Key MOCK_KEY =
+      new Key(new MockKeyVersion.Builder().comments("testing key").build());
+
   // Driver implementation being tested
   private final Class<T> driverClass;
-  
+
   // Shared context and random source for testing
   private K2Context sharedContext;
   private Random sharedRandom;
 
   /**
-   * Initializes the driver testing boilerplate. 
-   * 
+   * Initializes the driver testing boilerplate.
+   *
    * @param driverClass Driver implementation being tested.
    */
   protected BasicDriverTest(Class<T> driverClass) {
@@ -79,7 +79,7 @@ public abstract class BasicDriverTest<T extends Driver> {
   }
 
   /**
-   * Creates shared objects for use in tests. 
+   * Creates shared objects for use in tests.
    */
   @Before public void setupShared() {
     sharedContext = newContext();
@@ -88,29 +88,29 @@ public abstract class BasicDriverTest<T extends Driver> {
 
   /**
    * Test that the driver has a valid structure by attempting to install it.
-   * This simple test applies to any driver. 
+   * This simple test applies to any driver.
    */
   @Test public void testDriverStructure() {
     K2Storage storage = new K2Storage(getSharedContext());
     try {
       storage.installDriver(driverClass);
     } catch (StorageDriverException ex) {
-      throw new AssertionError("Driver structure is bad.", ex);
+      throw new RuntimeException("Driver structure is bad.", ex);
     }
   }
 
   /**
    * Returns a shared context for initializing drivers.
-   * 
-   * <p>Do NOT use if it creates dependencies between individual tests! 
+   *
+   * <p>Do NOT use if it creates dependencies between individual tests!
    */
   protected K2Context getSharedContext() {
     return sharedContext;
   }
-  
+
   /**
    * Returns the shared random source.
-   * 
+   *
    * <p>Do NOT use if it creates dependencies between individual tests or
    * causes flaky test results!
    */
@@ -120,7 +120,7 @@ public abstract class BasicDriverTest<T extends Driver> {
 
   /**
    * Creates a new context for initializing drivers.
-   * 
+   *
    * <p>The context will have all necessary key versions registered.
    */
   protected K2Context newContext() {
@@ -128,21 +128,21 @@ public abstract class BasicDriverTest<T extends Driver> {
     try {
       context.getKeyVersionRegistry().register(MockKeyVersion.class);
     } catch (KeyVersionException ex) {
-      throw new AssertionError("Could not register mock.", ex);
+      throw new RuntimeException("Could not register mock.", ex);
     }
     return context;
   }
-  
+
   /**
    * Creates an instance of the driver initialized with the shared context.
    */
   protected T newDriver() {
     return newDriver(sharedContext);
   }
-  
+
   /**
    * Creates an instance of the driver initialized with the specified context.
-   * 
+   *
    * @param context Context to use for initializing the driver.
    */
   protected T newDriver(K2Context context) {
@@ -150,15 +150,15 @@ public abstract class BasicDriverTest<T extends Driver> {
     try {
       driver = driverClass.newInstance();
     } catch (Exception ex) {
-      throw new AssertionError("Could not instantiate driver.", ex);
+      throw new RuntimeException("Could not instantiate driver.", ex);
     }
     driver.initialize(context);
     return driver;
   }
-  
+
   /**
    * Checks that the address is rejected by the driver for the given reason.
-   * 
+   *
    * @param address String address to open.
    * @param reason Reason the address is rejected.
    */
@@ -166,10 +166,10 @@ public abstract class BasicDriverTest<T extends Driver> {
       String address, IllegalAddressException.Reason reason) {
     checkRejectAddress(URI.create(address), reason);
   }
-  
+
   /**
    * Checks that the address is rejected by the driver for the given reason.
-   * 
+   *
    * @param address URI address to open.
    * @param reason Reason the address is rejected.
    */
@@ -180,7 +180,7 @@ public abstract class BasicDriverTest<T extends Driver> {
       driver.open(address);
       fail("Should reject " + address);
     } catch (StoreException ex) {
-      throw new AssertionError("Unexpected", ex);
+      throw new RuntimeException("Unexpected", ex);
     } catch (IllegalAddressException expected) {
       assertEquals(reason, expected.getReason());
       assertEquals(address.toString(), expected.getAddress());
@@ -188,13 +188,13 @@ public abstract class BasicDriverTest<T extends Driver> {
       driver.close();
     }
   }
-  
+
   /**
-   * Checks that the address is normalized correctly. 
-   * 
+   * Checks that the address is normalized correctly.
+   *
    * @param expected Expected result of normalization.
    * @param address Address to check.
-   * 
+   *
    * @throws K2Exception if there is an unexpected failure opening the address.
    */
   protected void checkNormalization(String expected, String address)
@@ -210,17 +210,17 @@ public abstract class BasicDriverTest<T extends Driver> {
 
   /**
    * Checks that a load fails on the driver because of the specified I/O reason.
-   * 
+   *
    * @param driver Driver to load from.
    * @param reason Reason for the failure.
-   * 
+   *
    * @throws StoreException if there is an unexpected error.
    */
   protected void checkLoadFails(
       ReadableDriver driver, StoreIOException.Reason reason)
           throws StoreException {
     assertFalse(driver.isEmpty());
-    try {    
+    try {
       driver.load();
       fail("Load should fail.");
     } catch (StoreIOException expected) {
@@ -229,12 +229,12 @@ public abstract class BasicDriverTest<T extends Driver> {
   }
 
   /**
-   * Checks that the driver loads the given key. 
-   * 
+   * Checks that the driver loads the given key.
+   *
    * @param driver Driver to load from.
    * @param expected The key that should be loaded.
-   * 
-   * @throws StoreException if there is an unexpected error loading. 
+   *
+   * @throws StoreException if there is an unexpected error loading.
    */
   protected void checkLoad(ReadableDriver driver, Key expected)
       throws StoreException {
@@ -242,22 +242,22 @@ public abstract class BasicDriverTest<T extends Driver> {
     Key loaded = driver.load();
     assertEquals(
         expected.buildData().build().toByteString(),
-        loaded.buildData().build().toByteString());    
+        loaded.buildData().build().toByteString());
   }
 
   /**
    * Checks that the driver can correctly load, save and erase keys with a
    * simple test sequence. The driver must implement both {@link ReadableDriver}
-   * and {@link WritableDriver}. 
-   * 
+   * and {@link WritableDriver}.
+   *
    * @param driver Driver instance to test.
-   * 
-   * @throws StoreException if there is an unexpected error during the sequence. 
+   *
+   * @throws StoreException if there is an unexpected error during the sequence.
    */
   protected void checkLoadSaveErase(Driver driver) throws StoreException {
     ReadableDriver rdriver = (ReadableDriver)driver;
     WritableDriver wdriver = (WritableDriver)driver;
-    
+
     assertFalse(wdriver.erase());
     assertTrue(rdriver.isEmpty());
     assertNull(rdriver.load());
@@ -265,7 +265,7 @@ public abstract class BasicDriverTest<T extends Driver> {
     wdriver.save(MOCK_KEY);
     assertFalse(rdriver.isEmpty());
     checkLoad(rdriver, MOCK_KEY);
-    
+
     wdriver.save(EMPTY_KEY);
     assertFalse(rdriver.isEmpty());
     checkLoad(rdriver, EMPTY_KEY);
@@ -275,17 +275,17 @@ public abstract class BasicDriverTest<T extends Driver> {
     assertNull(rdriver.load());
     assertFalse(wdriver.erase());
   }
-  
+
   /**
    * Generates a random string of digits.
-   * 
+   *
    * @param length Length of the string to generate.
    */
   protected String generateString(int length) {
     Random random = getSharedRandom();
     char[] buffer = new char[length];
     for (int i = buffer.length; --i >= 0; ) {
-      buffer[i] = (char)('0' + random.nextInt(10)); 
+      buffer[i] = (char)('0' + random.nextInt(10));
     }
     return new String(buffer);
   }

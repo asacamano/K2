@@ -24,13 +24,14 @@ import com.google.k2crypto.keyversions.KeyVersionInfo;
 /**
  * Exception thrown when there is a problem with the structure of a
  * key version implementation.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class KeyVersionException extends K2Exception {
-  
+	private static final long serialVersionUID = 1L;
+
   /**
-   * Reason why the KeyVersionException was thrown. 
+   * Reason why the KeyVersionException was thrown.
    */
   public static enum Reason {
     /**
@@ -42,10 +43,10 @@ public class KeyVersionException extends K2Exception {
      * The builder class does not extend {@link Builder}.
      */
     BAD_PARENT("Builder class does not extend KeyVersion.Builder."),
-    
+
     /**
      * The builder class does not have a {@code build()} method
-     * returning the expected key version type. 
+     * returning the expected key version type.
      */
     BAD_BUILD("Builder class does not build the specified KeyVersion."),
 
@@ -69,7 +70,7 @@ public class KeyVersionException extends K2Exception {
      * The key version class is not annotated with {@link KeyVersionInfo}.
      */
     NO_METADATA("Key version is missing meta-data annotation."),
-    
+
     /**
      * The annotation-declared proto class does not appear to be a generated
      * proto.
@@ -77,16 +78,16 @@ public class KeyVersionException extends K2Exception {
     BAD_PROTO("The provided proto class does not look like a proto.");
 
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-      
+
   private final Class<? extends KeyVersion> keyVersionClass;
 
   private final Reason reason;
-  
+
   /**
    * Constructs a new KeyVersionException.
    *
@@ -99,16 +100,30 @@ public class KeyVersionException extends K2Exception {
     this.keyVersionClass = keyVersionClass;
     this.reason = reason;
   }
-  
+
+  /**
+   * Constructs a new KeyVersionException.
+   *
+   * @param keyVersionClass Class of the problematic key version.
+   * @param reason The reason the key version is problematic.
+   * @param cause The underlying exception
+   */
+  public KeyVersionException(
+      Class<? extends KeyVersion> keyVersionClass, Reason reason, Exception cause) {
+    super(reason.message, cause);
+    this.keyVersionClass = keyVersionClass;
+    this.reason = reason;
+  }
+
   /**
    * Returns the class of the problematic key version.
    */
   public Class<? extends KeyVersion> getKeyVersionClass() {
     return keyVersionClass;
   }
-  
+
   /**
-   * Returns the reason the key version is problematic. 
+   * Returns the reason the key version is problematic.
    */
   public Reason getReason() {
     return reason;

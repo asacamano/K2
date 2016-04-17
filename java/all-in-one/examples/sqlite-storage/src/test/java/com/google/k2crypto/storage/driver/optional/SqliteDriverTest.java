@@ -34,16 +34,16 @@ import java.net.URI;
 
 /**
  * Unit tests for the SQLite storage driver.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 @RunWith(JUnit4.class)
 public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
 
-  // Scheme prefix to add to addresses 
+  // Scheme prefix to add to addresses
   private static final String ADDRESS_PREFIX = SqliteDriver.SCHEME + ':';
-  
-  // Generic key id postfix to add to addresses 
+
+  // Generic key id postfix to add to addresses
   private static final String GENERIC_KEY_ID = "#my%20key";
 
   /**
@@ -52,7 +52,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
   public SqliteDriverTest() {
     super(SqliteDriver.class);
   }
-  
+
   /**
    * Tests that the open() method rejects all syntactically invalid
    * URI addresses.
@@ -68,7 +68,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
     checkRejectAddress(
         ADDRESS_PREFIX + "/database?password=1234" + GENERIC_KEY_ID,
         IllegalAddressException.Reason.QUERY_UNSUPPORTED);
-    
+
     // Test invalid schemes
     checkRejectAddress(
         "k2:/database" + GENERIC_KEY_ID,
@@ -79,14 +79,14 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
     checkRejectAddress(
         "/database" + GENERIC_KEY_ID,
         IllegalAddressException.Reason.INVALID_SCHEME);
-    
+
     // Test no database path
     checkRejectAddress(
         ADDRESS_PREFIX + "host" + GENERIC_KEY_ID,
         IllegalAddressException.Reason.MISSING_PATH);
-    
+
     final String testingAddress = ADDRESS_PREFIX + getTestingDirPath();
-    
+
     // Test common illegal database filename characters
     for (char illegal : new char[] {
         '\0', '\n', '\r', '\t', '\f', '\b', '\u007F',
@@ -101,7 +101,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
           testingAddress + encoded + GENERIC_KEY_ID,
           IllegalAddressException.Reason.INVALID_PATH);
     }
-    
+
     // Test illegal database filename prefixes
     for (String illegalPrefix : new String[] { "~", ".", "%20" }) {
       checkRejectAddress(
@@ -115,7 +115,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
           testingAddress + "abc" + illegalPostfix + GENERIC_KEY_ID,
           IllegalAddressException.Reason.INVALID_PATH);
     }
-    
+
     // Test no fragment (key identifier)
     checkRejectAddress(
         ADDRESS_PREFIX + "/database",
@@ -136,7 +136,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
             generateAddress(db, encoded),
             IllegalAddressException.Reason.INVALID_FRAGMENT);
       }
-      
+
       // Test no spaces at start/end of key identifier
       checkRejectAddress(
           generateAddress(db, "%20key"),
@@ -148,7 +148,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
       db.delete();
     }
   }
-  
+
   /**
    * Tests that the open() method accepts a key identifier at maximum length
    * and rejects when it is any longer.
@@ -168,15 +168,15 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
         driver.open(generateAddress(db, generateString(MAX_KEY_ID_LENGTH)));
       } finally {
         driver.close();
-      }  
+      }
     } finally {
       db.delete();
     }
   }
-  
+
   /**
-   * Tests that the open() method rejects addresses pointing to a bad 
-   * database file location (on disk). 
+   * Tests that the open() method rejects addresses pointing to a bad
+   * database file location (on disk).
    */
   @Test public final void testRejectBadDatabaseLocation() {
     // We can only run this test if there is a physical root available
@@ -189,7 +189,7 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
             IllegalAddressException.Reason.INVALID_PATH);
       }
     }
-    
+
     // The database file should not be a directory.
     File db = generateTempDatabase();
     try {
@@ -221,13 +221,13 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
     File db = generateTempDatabase();
     try {
       final String expected = generateAddress(db, "my%20key").toString();
-      
+
       final String filename = db.getName();
       final String absTestingPath = new File("").toURI()
           .resolve(db.getParentFile().toURI().getRawPath())
           .normalize().getRawPath();
       final String absTestingAddress = ADDRESS_PREFIX + absTestingPath;
-      
+
       checkNormalization(expected,
           absTestingAddress + filename + GENERIC_KEY_ID);
       checkNormalization(expected,
@@ -236,14 +236,14 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
           absTestingAddress + "/././" + filename + GENERIC_KEY_ID);
       checkNormalization(expected,
           absTestingAddress + "a/./b/.././../" + filename + GENERIC_KEY_ID);
-      
+
     } finally {
       db.delete();
     }
   }
-  
+
   /**
-   * Tests saving, loading and erasing keys. 
+   * Tests saving, loading and erasing keys.
    */
   @Test public final void testSaveLoadErase() throws K2Exception {
     File db = generateTempDatabase();
@@ -258,24 +258,24 @@ public class SqliteDriverTest extends FileBasedDriverTest<SqliteDriver> {
   }
 
   /**
-   * Generates an empty temporary database file for testing. 
+   * Generates an empty temporary database file for testing.
    */
   private File generateTempDatabase() {
     File db = generateFile(getTestingDir(), "sqlite", ".db");
     db.deleteOnExit();
     return db;
   }
-  
+
   /**
    * Generates a storage address that points to the given database file and key.
-   * 
+   *
    * @param database File of the database (on disk).
    * @param keyName Raw name of the key (appended as the URI fragment).
-   * 
-   * @return a URI address pointing to the given database and key. 
+   *
+   * @return a URI address pointing to the given database and key.
    */
   private static URI generateAddress(File database, String keyName) {
     return URI.create(ADDRESS_PREFIX + database.toURI().normalize().getRawPath()
         + '#' + keyName);
-  }  
+  }
 }

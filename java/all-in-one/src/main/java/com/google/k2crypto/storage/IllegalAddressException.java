@@ -22,20 +22,21 @@ import java.net.URI;
 
 /**
  * Exception thrown when a given String or URI is not a valid storage address.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class IllegalAddressException extends K2Exception {
+  private static final long serialVersionUID = 1L;
 
   /**
-   * Reason why the IllegalAddressException was thrown. 
+   * Reason why the IllegalAddressException was thrown.
    */
   public static enum Reason {
     /**
      * The (string) address could not be parsed as a URI.
      */
     INVALID_URI("Address is not a valid URI."),
-    
+
     /**
      * The address has a scheme component and the driver does not recognize it.
      */
@@ -46,7 +47,7 @@ public class IllegalAddressException extends K2Exception {
      * (typically for file-system-based drivers).
      */
     INVALID_PATH("Address does not have a valid path."),
-    
+
     /**
      * The address query is unrecognized or invalid.
      */
@@ -56,7 +57,7 @@ public class IllegalAddressException extends K2Exception {
      * The address fragment is unrecognized or invalid.
      */
     INVALID_FRAGMENT("Address does not have a valid fragment."),
-    
+
     /**
      * The address does not have the required host/port components.
      * (typically for network-based drivers).
@@ -78,7 +79,7 @@ public class IllegalAddressException extends K2Exception {
      * The address does not have the required fragment.
      */
     MISSING_FRAGMENT("Address does not have a fragment."),
-    
+
     /**
      * The address has a user component and the driver does not support it.
      */
@@ -116,18 +117,18 @@ public class IllegalAddressException extends K2Exception {
     DRIVER_SPECIFIC("Address was rejected by the driver.");
 
     final String message;
-    
+
     private Reason(String message) {
       this.message = message;
     }
   }
-  
+
   private final String address;
-  
+
   private final Reason reason;
-  
+
   private final String details;
-  
+
   /**
    * Constructs a new IllegalAddressException.
    *
@@ -179,21 +180,21 @@ public class IllegalAddressException extends K2Exception {
     this.reason = reason;
     this.details = details;
   }
-  
+
   /**
    * Returns the illegal address.
    */
   public String getAddress() {
     return address;
   }
-  
+
   /**
    * Returns the reason why the address is illegal.
    */
   public Reason getReason() {
     return reason;
   }
-  
+
   /**
    * Returns driver-specific details for why the address was rejected.
    */

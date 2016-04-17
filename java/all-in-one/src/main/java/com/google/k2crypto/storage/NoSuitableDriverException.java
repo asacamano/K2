@@ -23,13 +23,14 @@ import java.net.URI;
 /**
  * Exception thrown when there is no suitable driver for accessing a specified
  * storage address.
- * 
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class NoSuitableDriverException extends K2Exception {
-        
+  private static final long serialVersionUID = 1L;
+
   private final URI address;
-  
+
   /**
    * Constructs a new NoSuitableDriverException.
    *
@@ -39,7 +40,7 @@ public class NoSuitableDriverException extends K2Exception {
     super(address.toString());
     this.address = address;
   }
-  
+
   /**
    * Returns the location that could not be accessed.
    */

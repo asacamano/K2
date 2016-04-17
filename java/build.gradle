@@ -29,9 +29,14 @@ subprojects {
   // The standard group for all projects
   group = 'com.google.k2'
 
-  // Java 1.5
-  sourceCompatibility = 1.5
-  targetCompatibility = 1.5
+  // Set to Java 1.6  to support Android 4.4
+  // Older Java versions are well past their EOL:
+  // http://www.oracle.com/technetwork/java/eol-135779.html
+  //
+  // And don't seem to be used much anymore:
+  // https://plumbr.eu/blog/java/java-version-statistics-2015-edition
+  sourceCompatibility = 1.6
+  targetCompatibility = 1.6
 
   // Use mavenCentral for project dependencies
   repositories {

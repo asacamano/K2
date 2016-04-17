@@ -37,7 +37,7 @@ import java.util.List;
  * @author John Maheswaran (maheswaran@google.com)
  */
 public class Key {
-  
+
   // Retained raw bytes of the core key information
   // (Cannot be changed once generated)
   private ByteString coreBytes = null;
@@ -48,7 +48,7 @@ public class Key {
   private ArrayList<KeyVersion> keyVersions = new ArrayList<KeyVersion>();
 
   /**
-   * 
+   *
    */
   private KeyVersion primary;
 
@@ -71,19 +71,19 @@ public class Key {
 
   /**
    * Construct a Key from protobuf data.
-   * 
+   *
    * @param context Context of the K2 session.
    * @param data Protobuf data of the key.
-   * 
+   *
    * @throws UnregisteredKeyVersionException if the data contains a key version
    *     type that has no registered implementation.
    * @throws InvalidKeyDataException if the protobuf data is invalid.
    */
   public Key(K2Context context, KeyData data)
       throws UnregisteredKeyVersionException, InvalidKeyDataException {
-    
+
     // NOTE: lower-level exceptions take precedence by design
-    
+
     KeyVersionRegistry registry = context.getKeyVersionRegistry();
     ExtensionRegistry protoRegistry = registry.getProtoExtensions();
 
@@ -94,8 +94,9 @@ public class Key {
           InvalidKeyDataException.Reason.PROTO_PARSE, null);
     }
     coreBytes = data.getCore();
-    
+
     // Parse the core, containing the security/usage constraints
+    @SuppressWarnings("unused") // TODO(asacamano@gmail.com) Is this necessary?
     KeyCore core;
     try {
       core = KeyCore.parseFrom(coreBytes, protoRegistry);
@@ -109,9 +110,9 @@ public class Key {
     final int kvCount = data.getKeyVersionCount();
     keyVersions.ensureCapacity(kvCount);
 
-    UnregisteredKeyVersionException unregisteredException = null; 
+    UnregisteredKeyVersionException unregisteredException = null;
     InvalidKeyDataException buildException = null;
-    
+
     for (KeyVersionData kvData : data.getKeyVersionList()) {
       if (!kvData.hasType()) {
         // Type field is required
@@ -129,7 +130,7 @@ public class Key {
       } catch (RuntimeException ex) {
         // We consider runtime exceptions to be parsing exceptions
         throw new InvalidKeyDataException(
-            InvalidKeyDataException.Reason.PROTO_PARSE, ex);        
+            InvalidKeyDataException.Reason.PROTO_PARSE, ex);
       } catch (BuilderException ex) {
         // Delay-throw builder exceptions...
         buildException = new InvalidKeyDataException(
@@ -146,7 +147,7 @@ public class Key {
     } else if (buildException != null) {
       throw buildException;
     }
-    
+
     // Extract the primary
     if (kvCount > 0) {
       int primaryIndex = (data.hasPrimary() ? data.getPrimary() : -1);
@@ -154,7 +155,7 @@ public class Key {
         throw new InvalidKeyDataException(
             InvalidKeyDataException.Reason.CORRUPTED_PRIMARY, null);
       }
-      primary = keyVersions.get(primaryIndex);      
+      primary = keyVersions.get(primaryIndex);
     }
   }
 
@@ -170,10 +171,10 @@ public class Key {
     }
     return core;
   }
-  
+
   /**
    * Returns a builder for building the protobuf core of the key.
-   * 
+   *
    * <p>The core contains all the security properties of the key.
    */
   protected KeyCore.Builder buildCore() {
@@ -181,10 +182,10 @@ public class Key {
     // TODO(darylseah): populate core with security properties
     return builder;
   }
-  
+
   /**
    * Returns a builder for building the protobuf data of the key.
-   * 
+   *
    * <p>The data contains the core as well as the key versions in the key.
    */
   public KeyData.Builder buildData() {
@@ -204,7 +205,7 @@ public class Key {
     }
     return builder;
   }
-  
+
   /**
    * Method to add a KeyVersion to this Key
    *
@@ -243,7 +244,7 @@ public class Key {
    * @param keyversion the keyversion to set as the primary
    */
   protected void setPrimary(KeyVersion keyversion) {
-    // TODO: check that the primary keyversion is in the list 
+    // TODO: check that the primary keyversion is in the list
     this.primary = keyversion;
 
   }

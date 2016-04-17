@@ -37,17 +37,17 @@ import java.net.URI;
 
 /**
  * Unit tests for an InstalledDriver.
- * 
+ *
  * <p>Goal is to verify that the class will reject all badly-implemented
- * drivers and accept odd (but valid) driver implementations. 
- * 
+ * drivers and accept odd (but valid) driver implementations.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 @RunWith(JUnit4.class)
 public class InstalledDriverTest {
-  
+
   private K2Context context = null;
- 
+
   /**
    * Creates a context for the tests.
    */
@@ -56,10 +56,10 @@ public class InstalledDriverTest {
   }
 
   /**
-   * Tests rejection when the context to the constructor is null. 
+   * Tests rejection when the context to the constructor is null.
    */
   @Test public final void testRejectNullContext() throws K2Exception {
-    Class<? extends Driver> driverClass = MockDriver.class; 
+    Class<? extends Driver> driverClass = MockDriver.class;
     try {
       new InstalledDriver(null, driverClass);
       fail("Expected NullPointerException of context.");
@@ -67,9 +67,9 @@ public class InstalledDriverTest {
       assertEquals("context", expected.getMessage());
     }
   }
-  
+
   /**
-   * Tests rejection when the driver class to the constructor is null. 
+   * Tests rejection when the driver class to the constructor is null.
    */
   @Test public final void testRejectNullDriverClass() throws K2Exception {
     try {
@@ -79,15 +79,15 @@ public class InstalledDriverTest {
       assertEquals("driverClass", expected.getMessage());
     }
   }
-  
+
   /**
-   * Utility to verify that a driver class is accepted. 
-   * 
+   * Utility to verify that a driver class is accepted.
+   *
    * @param driverClass Class of the driver.
-   * 
+   *
    * @return the InstalledDriver that accepted the implementation,
    *         for further checking.
-   *         
+   *
    * @throws StorageDriverException if the driver is rejected.
    */
   private InstalledDriver checkAcceptInstallation(
@@ -101,13 +101,13 @@ public class InstalledDriverTest {
     assertEquals(context, ((MockDriver)driver).context);
     return idriver;
   }
-  
+
   /**
-   * Utility to verify that a driver class is rejected for the specified reason. 
-   * 
+   * Utility to verify that a driver class is rejected for the specified reason.
+   *
    * @param driverClass Driver class to check.
    * @param reason Reason for the rejection.
-   * @param failMessage Assertion message used if the driver is NOT rejected. 
+   * @param failMessage Assertion message used if the driver is NOT rejected.
    */
   private void checkRejectInstallation(
       Class<? extends Driver> driverClass,
@@ -121,7 +121,7 @@ public class InstalledDriverTest {
       assertEquals(reason, expected.getReason());
     }
   }
-  
+
   /**
    * Tests rejection of a driver that is neither capable of reading nor writing.
    */
@@ -137,7 +137,7 @@ public class InstalledDriverTest {
    */
   @Test public final void testAcceptNormalDriver() throws K2Exception {
     InstalledDriver idriver =
-        checkAcceptInstallation(MockDriver.Normal.class); 
+        checkAcceptInstallation(MockDriver.Normal.class);
     assertEquals("mock", idriver.getId());
     assertEquals("Mock Driver", idriver.getName());
     assertEquals("1.0", idriver.getVersion());
@@ -153,7 +153,7 @@ public class InstalledDriverTest {
    */
   @Test public final void testAcceptReadOnlyDriver() throws K2Exception {
     InstalledDriver idriver =
-        checkAcceptInstallation(MockDriver.ReadOnly.class); 
+        checkAcceptInstallation(MockDriver.ReadOnly.class);
     assertEquals("mock-ro", idriver.getId());
     assertEquals("Read-Only Mock Driver", idriver.getName());
     assertEquals("2.0", idriver.getVersion());
@@ -163,13 +163,13 @@ public class InstalledDriverTest {
     assertFalse(idriver.isWriteOnly());
     assertTrue(idriver.isWrapSupported());
   }
-  
+
   /**
    * Tests acceptance of a write-only driver.
    */
   @Test public final void testAcceptWriteOnlyDriver() throws K2Exception {
     InstalledDriver idriver =
-        checkAcceptInstallation(MockDriver.WriteOnly.class); 
+        checkAcceptInstallation(MockDriver.WriteOnly.class);
     assertEquals("mock-wo", idriver.getId());
     assertEquals("Write-Only Mock Driver", idriver.getName());
     assertEquals("3.0", idriver.getVersion());
@@ -179,13 +179,13 @@ public class InstalledDriverTest {
     assertTrue(idriver.isWriteOnly());
     assertTrue(idriver.isWrapSupported());
   }
-  
+
   /**
    * Tests acceptance of a no-wrap driver.
    */
   @Test public final void testAcceptNoWrapDriver() throws K2Exception {
     InstalledDriver idriver =
-        checkAcceptInstallation(MockDriver.NoWrap.class); 
+        checkAcceptInstallation(MockDriver.NoWrap.class);
     assertEquals("mock-nw", idriver.getId());
     assertEquals("No-Wrap Mock Driver", idriver.getName());
     assertEquals("4.0", idriver.getVersion());
@@ -195,9 +195,9 @@ public class InstalledDriverTest {
     assertFalse(idriver.isWriteOnly());
     assertFalse(idriver.isWrapSupported());
   }
-  
+
   /**
-   * Tests rejection of a driver without a zero-argument constructor. 
+   * Tests rejection of a driver without a zero-argument constructor.
    */
   @Test public final void testRejectNoConstructorDriver() {
     checkRejectInstallation(
@@ -205,15 +205,15 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.NO_CONSTRUCTOR,
         "Drivers without a zero-argument constructor should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(id = "mock", name = "No Constructor Driver", version = "1.0")
   public static class NoConstructorDriver extends MockDriver.Normal {
-    public NoConstructorDriver(@SuppressWarnings("unused") Object obj) {}
+    public NoConstructorDriver(Object obj) {}
   }
-  
+
   /**
-   * Tests rejection of an abstract driver. 
+   * Tests rejection of an abstract driver.
    */
   @Test public final void testRejectAbstractDriver() {
     checkRejectInstallation(
@@ -221,13 +221,13 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.INSTANTIATE_FAIL,
         "Abstract drivers should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(id = "mock", name = "Abstract Driver", version = "1.0")
   public static abstract class AbstractDriver extends MockDriver.Normal {
     public AbstractDriver() {}
   }
-  
+
   /**
    * Tests acceptance of a private driver with a package-protected constructor.
    * (Yes, this works.)
@@ -235,7 +235,7 @@ public class InstalledDriverTest {
   @Test public final void testAcceptPrivateDriver() throws K2Exception {
     InstalledDriver idriver =
         checkAcceptInstallation(PrivateDriver.class);
-    assertEquals("priv", idriver.getId());      
+    assertEquals("priv", idriver.getId());
     assertEquals("Private Driver", idriver.getName());
     assertEquals("1.0.0", idriver.getVersion());
   }
@@ -247,7 +247,7 @@ public class InstalledDriverTest {
   }
 
   /**
-   * Tests rejection of a driver with a private constructor. 
+   * Tests rejection of a driver with a private constructor.
    */
   @Test public final void testRejectPrivateConstructor() {
     checkRejectInstallation(
@@ -255,16 +255,16 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.INSTANTIATE_FAIL,
         "Drivers with private constructors should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(id = "mock", name = "Private Constructor Driver", version = "1.0")
   public static class PrivateConstructorDriver extends MockDriver.Normal {
     private PrivateConstructorDriver() {}
   }
- 
+
   /**
    * Tests rejection of a driver with a constructor that throws illegal
-   * throwables. 
+   * throwables.
    */
   @Test public final void testRejectConstructorWithBadThrowables() {
     checkRejectInstallation(
@@ -273,7 +273,7 @@ public class InstalledDriverTest {
         "Drivers with constructors throwing throwables other than Error "
             + "and RuntimeException should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(
       id = "mock",
@@ -283,7 +283,7 @@ public class InstalledDriverTest {
       extends MockDriver.Normal {
     public ConstructorWithBadThrowablesDriver() throws Exception, Throwable {}
   }
-  
+
   /**
    * Test acceptance of a driver with a constructor that throws entirely legal
    * throwables.
@@ -292,11 +292,11 @@ public class InstalledDriverTest {
       throws K2Exception {
     InstalledDriver idriver =
         checkAcceptInstallation(ConstructorWithLegalThrowablesDriver.class);
-    assertEquals("legalcon", idriver.getId());      
+    assertEquals("legalcon", idriver.getId());
     assertEquals("Constructor with Legal Throwables Driver", idriver.getName());
     assertEquals("0.1", idriver.getVersion());
   }
-  
+
   // Test "data" for the above
   @DriverInfo(
       id = "legalcon",
@@ -317,7 +317,7 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.NO_METADATA,
         "Drivers without the StoreDriverInfo annotation should be rejected.");
   }
-  
+
   // Test "data" for the above
   public static class NoAnnotationDriver implements Driver, ReadableDriver {
     public NoAnnotationDriver() {}
@@ -327,7 +327,7 @@ public class InstalledDriverTest {
     public boolean isEmpty() { return false; }
     public Key load() { return null; }
   }
-  
+
   /**
    * Tests rejection of a driver with an empty identifier.
    */
@@ -337,13 +337,13 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.ILLEGAL_ID,
         "Drivers with empty identifiers should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(id = "", name = "Empty Identifier Driver", version = "1.0")
   public static class EmptyIdentifierDriver extends MockDriver.Normal {
-    public EmptyIdentifierDriver() {}    
+    public EmptyIdentifierDriver() {}
   }
-  
+
   /**
    * Tests rejection of a driver with an illegal identifier.
    */
@@ -353,7 +353,7 @@ public class InstalledDriverTest {
         StorageDriverException.Reason.ILLEGAL_ID,
         "Drivers with illegal identifiers should be rejected.");
   }
-  
+
   // Test "data" for the above
   @DriverInfo(
       id = "0b:@_d I/D",
@@ -362,18 +362,18 @@ public class InstalledDriverTest {
   public static class BadIdentifierDriver extends MockDriver.Normal {
     public BadIdentifierDriver() {}
   }
-  
+
   /**
    * Tests acceptance of a driver with a complex but legal identifier.
    */
   @Test public final void testAcceptComplexIdentifier() throws K2Exception {
     InstalledDriver idriver =
-        checkAcceptInstallation(ComplexIdentifierDriver.class); 
-    assertEquals("c0m-p13x+id.", idriver.getId());      
+        checkAcceptInstallation(ComplexIdentifierDriver.class);
+    assertEquals("c0m-p13x+id.", idriver.getId());
     assertEquals("Complex Identifier Driver", idriver.getName());
     assertEquals("1.0a", idriver.getVersion());
   }
-  
+
   // Test "data" for the above
   @DriverInfo(
       id = "c0m-p13x+id.",

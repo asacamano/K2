@@ -17,12 +17,14 @@
 package com.google.k2crypto;
 
 /**
- * Super-class of all K2-specific exceptions. 
- * 
+ * Super-class of all K2-specific exceptions.
+ *
  * @author darylseah@gmail.com (Daryl Seah)
  */
 public class K2Exception extends Exception {
-  
+
+  private static final long serialVersionUID = 1L;
+
   /**
    * Constructs a new K2 exception with the specified message.
    *
@@ -31,7 +33,7 @@ public class K2Exception extends Exception {
   public K2Exception(String message) {
     super(message);
   }
-  
+
   /**
    * Constructs a new K2 exception with the specified message and cause.
    *
@@ -41,7 +43,7 @@ public class K2Exception extends Exception {
   public K2Exception(String message, Throwable cause) {
     super(message, cause);
   }
-  
+
   /**
    * Constructs a new K2 exception with the specified cause.
    *
