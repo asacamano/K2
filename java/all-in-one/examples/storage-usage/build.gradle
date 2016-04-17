@@ -15,5 +15,5 @@
 // limitations under the License.
 
 dependencies {
-  compile project(':examples:sqlite-storage')
+  compile project(':all-in-one:examples:sqlite-storage')
 }
