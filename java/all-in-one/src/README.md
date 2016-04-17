@@ -17,6 +17,3 @@ limitations under the License.
 ## What goes in this directory?
 
 This directory contains the Java source code.
-
-
-

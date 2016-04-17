@@ -24,4 +24,3 @@ This code will be refactored and moved to separate directorys as the new K2 stru
 ## Hacking on the Java implementation
 
 Read HACKING.md in this directory and the parent directory.
-

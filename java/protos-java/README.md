@@ -21,4 +21,3 @@ This directory contains the java build that copiles the protos into java.
 ## Hacking on the Java implementation
 
 Read HACKING.md in parent directory.
-
