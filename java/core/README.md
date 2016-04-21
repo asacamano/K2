@@ -52,12 +52,10 @@ See more examples in src/test/java/com/google/k2/api.K2CanonicalExampleTest
 
 # K2 Implemenation API - com.google.k2.internal
 
-K2 is extremely modular - this is one of the
-[main goals](https://github.com/google/K2/wiki/What-is-K2) of the K2 project. That modularity is
-demonstrated by the layout of the code under com.google.k2.internal:
+K2's internal code is all organized in packages under com.google.k2.internal. The following sections
+describe how K2 is structured internally.
 
-
-## K2 core objects
+## K2 core cryptographic objects
 
 The basic logic of K2 is that data is wrapped to provide protection. That protection is described
 as a set of SecurityPropertys. These property are used to create the Wrapper object that performs
@@ -110,7 +108,9 @@ K2-PGP plugin could be written to parse PGP data.
 
 ## Internal organization
 
-K2's internal code is all organized in packages under com.google.k2.internal.
+K2 is extremely modular - this is one of the
+[main goals](https://github.com/google/K2/wiki/What-is-K2) of the K2 project. That modularity is
+demonstrated by the layout of the code under com.google.k2.internal:
 
 * common: This is where internal utilities go and classes used widely across all
 parts of K2 and plugins.
