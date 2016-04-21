@@ -32,10 +32,10 @@ cryptographic operations.
 
 ## Example usage
 
-This example assumes a real implementaion with a file base key storage K2 plugin, and a JCE based
+This example assumes a real implementation with a file base key storage K2 plugin, and a JCE based
 primitive provider K2 plugin. (TODO: asacamano@gmail.com - write these)
 
-'''
+```
 K2 k2 = JceK2LBuilder.latestGuidelines().withFileStorage("/keydir").build();
 
 Wrapper encrypter = k2.getWrapper(TestKeyStorage.SYM_KEY_ID, SecurityProperty.CONFIDENTIALITY);
@@ -46,11 +46,11 @@ byte[] ciphertext = encrypter.wrap(plaintext);
 
 // Example decryption call
 byte[] plaintext = decrypter.unwrap(ciphertext);
-'''
+```
 
 See more examples in src/test/java/com/google/k2/api.K2CanonicalExampleTest
 
-# K2 Implemenation API - com.google.k2.internal
+# K2 Implementation API - com.google.k2.internal
 
 K2's internal code is all organized in packages under com.google.k2.internal. The following sections
 describe how K2 is structured internally.
@@ -103,7 +103,7 @@ Handling true streaming ciphers also requires that a block of parts be allowed t
 
 Implementations of the WrappedDataFormat interface are responsible for converting data to and from
 the internal message structure. These will be provided by plugins - for instance a K2-keyczar plugin
-could provide a WrappedDataFormat that knows how to parse Keyczar's JSON strutured messages, and a
+could provide a WrappedDataFormat that knows how to parse Keyczar's JSON structured messages, and a
 K2-PGP plugin could be written to parse PGP data.
 
 ## Internal organization
@@ -126,10 +126,10 @@ K2's internal message structure.
 * monitor: This package includes the default NoOpMonitor. Monitoring plugins should put their code
 in this package.
 * operations: This package provides the default K2 operations and their implementations.  Plugin
-authros and extend OperationFactory and provide their own operations, although this is strongly
+authors and extend OperationFactory and provide their own operations, although this is strongly
 discouraged unless your operations get reviewed by competent cryptographers. Many attacks on
 protected data actually attack the operation, and not the primitives involved.
-* primiteves: This packages provides the default K2 primitives.  Implementations are provided by
+* primitives: This packages provides the default K2 primitives.  Implementations are provided by
 plugins - for instance k2-jce provides primitives that use the JCE library. Someone could write
 a K2-bouncycastle plugin to use bouncycastle instead. Be very careful about creating your own
 implementations of cryptographic primitives - this is notoriously tricky programming, easy to get
