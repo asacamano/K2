@@ -1,6 +1,6 @@
-// K2 Crypto Library Java Settings File
+// K2 Crypto Library Java Build File
 //
-// Copyright 2014 Google. Inc.
+// Copyright 2016 Google. Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,8 +14,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-include ':core'
-include ':protos-java'
-include ':all-in-one'
-include ':all-in-one:examples:sqlite-storage'
-include ':all-in-one:examples:storage-usage'
+// Build a manifest file containing info about the library
+version = 'DEVELOPMENT'
+jar {
+  archiveName = "k2-core.jar"
+  manifest {
+    attributes 'Implementation-Title': 'K2 Crypto Library Core', 'Implementation-Version': version
+  }
+}
+
+// make the test classes available for other projects to depend on
+configurations {
+  testOutput
+}
+
+dependencies {
+  testOutput sourceSets.test.output
+}
