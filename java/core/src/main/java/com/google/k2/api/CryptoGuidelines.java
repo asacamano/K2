@@ -27,6 +27,9 @@ public interface CryptoGuidelines extends K2CollaborationParticipant {
   /**
    * Validates that the operation and the key are allowed (together) under these guidelines.
    *
+   * <p>This includes making sure that the key purposes are acceptable, that they key and the
+   * operation are compatible, and that the operation provides the requested security properties.
+   *
    * @param key the key to use as part of the validation
    * @param operation the operation to use as part of the validation
    * @param properties the properties to ensure hat the operation provides. If empty, then
