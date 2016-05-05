@@ -20,23 +20,28 @@ import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A PlaintextReadable is a common {@link SourceMessage} that just handles one field, a plaintext
+ * A PlaintextSourceMessage is a common {@link SourceMessage} that just handles one field, a plaintext
  * field.
  */
-public class PlaintextReadable implements SourceMessage {
+public class PlaintextSourceMessage implements SourceMessage {
 
   private final InputStream sourceStream;
   private final byte[] sourceBytes;
   private final AtomicBoolean moreToDo = new AtomicBoolean(true);
 
-  public PlaintextReadable(byte[] source) {
+  public PlaintextSourceMessage(byte[] source) {
     sourceStream = null;
     sourceBytes = Util.checkNotNull(source, "source");
   }
 
-  public PlaintextReadable(InputStream source) {
+  public PlaintextSourceMessage(InputStream source) {
     sourceStream = Util.checkNotNull(source, "source");
     sourceBytes = null;
+  }
+
+  @Override
+  public int getMessageFormatVersion() {
+    return 0; // Plaintext is unversioned
   }
 
   @Override

@@ -27,12 +27,12 @@ import java.io.OutputStream;
  * This is a test writable {@link SourceMessage} that formats data according to the test appraoch,
  * PIPE delimited, with everyting else in ASCII as much as possible.
  */
-public class TestStreamingInternalWritable implements DestinationMessage {
+public class TestStreamingDestinationMessage implements DestinationMessage {
 
   private final OutputStream destination;
   private boolean first = true;
 
-  public TestStreamingInternalWritable(OutputStream destination) {
+  public TestStreamingDestinationMessage(OutputStream destination) {
     this.destination = Util.checkNotNull(destination, "destination");
   }
 

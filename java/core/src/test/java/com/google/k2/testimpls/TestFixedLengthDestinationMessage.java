@@ -28,12 +28,12 @@ import java.nio.ByteBuffer;
  * approach, pipe delimited, with everything else in decimal and ASCII as much as possible, and only
  * really supporting the encryption of String data.
  */
-public class TestByteArrayInternalWritable implements DestinationMessage {
+public class TestFixedLengthDestinationMessage implements DestinationMessage {
 
   private final ByteBuffer destination;
   private boolean first = true;
 
-  public TestByteArrayInternalWritable(byte[] destination) {
+  public TestFixedLengthDestinationMessage(byte[] destination) {
     this.destination = ByteBuffer.wrap(Util.checkNotNull(destination, "destination"));
   }
 

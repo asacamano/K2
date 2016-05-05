@@ -30,6 +30,16 @@ import com.google.k2.internal.primitives.Operation;
 public interface SourceMessage {
 
   /**
+   * Returns the message format version.
+   *
+   * This is often the first field, and can be used by {@link WrappedDataFormat} implementations
+   * to define how to parse the message.  However, it is also needed by the Operation to validate
+   * that the operation is getting the right kind of message, so SourceMessage implementations need
+   * to keep it around and provide it on request.
+   */
+  public int getMessageFormatVersion();
+
+  /**
    * Returns the next part as an int, if there is one, otherwise throws.
    *
    * @return the int value of the next part

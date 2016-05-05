@@ -47,7 +47,7 @@ public class SymmetricCryptMessage {
     SymmetricCryptKey symmetricCryptingKey = (SymmetricCryptKey) key;
 
     List<MessageField> fields = new ArrayList<MessageField>();
-    fields.add(new MessageField("version", INTEGER, 1));
+    fields.add(new MessageField("msgVersion", INTEGER, 1));
     fields.add(new MessageField("iv", BYTES_FIXED, symmetricCryptingKey.getIvSize()));
     fields.add(new MessageField("ciphertext", BYTES_VARIABLE, 1));
     return Collections.unmodifiableList(fields);

@@ -84,15 +84,15 @@ public class SymmetricCryptWrap implements Operation {
     }
     SymmetricCryptKey symmetricCryptingKey = (SymmetricCryptKey) key;
 
-    SymmetricCryptPrimitive cryptPrimitive = (SymmetricCryptPrimitive) k2Objects
-        .getPrimitiveFactory().makeNewPrimitive(CorePrimitives.SYMMETRIC_CRYPT);
-
-    byte[] iv = cryptPrimitive.generateNewIv(symmetricCryptingKey);
+    SymmetricCryptPrimitive cryptPrimitive = (SymmetricCryptPrimitive)
+        k2Objects.getPrimitiveFactory().makeNewPrimitive(CorePrimitives.SYMMETRIC_CRYPT);
 
     // Write the version of a SymmetricCrypted message
     output.addInt("msgVersion", 1, 0);
 
-    // Now write the IV
+    // Now generate and write write the IV
+
+    byte[] iv = cryptPrimitive.generateNewIv(symmetricCryptingKey);
     Writable ivPart = output.addFixedBytes("iv", iv.length);
     ivPart.fillFrom(ByteBuffer.wrap(iv));
 

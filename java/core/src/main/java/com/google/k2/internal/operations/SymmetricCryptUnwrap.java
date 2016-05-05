@@ -83,17 +83,18 @@ public class SymmetricCryptUnwrap implements Operation {
     }
     SymmetricCryptKey symmetricCryptingKey = (SymmetricCryptKey) key;
 
-    SymmetricCryptPrimitive cryptPrimitive = (SymmetricCryptPrimitive) k2Objects
-        .getPrimitiveFactory().makeNewPrimitive(CorePrimitives.SYMMETRIC_CRYPT);
+    SymmetricCryptPrimitive cryptPrimitive = (SymmetricCryptPrimitive)
+        k2Objects.getPrimitiveFactory().makeNewPrimitive(CorePrimitives.SYMMETRIC_CRYPT);
 
     // Now parse a SymmetricCryptMessage
     // TODO(asacamano@gmail.com) think about how to keep this in sync with the message format
     // defined in SymmetricCryptMessage
 
     // Start with the version
-    int version = inputMessage.getNextInt();
+    int version = inputMessage.getMessageFormatVersion();
     if (version > 0) {
-      throw new CantReadException("The encrypted message is the wrong version. It must be < 0");
+      throw new CantReadException("The encrypted message is the wrong version. It is " + version
+          + " and it must be >= 0");
     }
 
     // Now read the initialization vector

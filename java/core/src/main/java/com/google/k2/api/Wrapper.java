@@ -20,7 +20,7 @@ import com.google.k2.api.exceptions.InvalidKeyException;
 import com.google.k2.api.exceptions.UnimplementedPrimitiveException;
 import com.google.k2.internal.common.Util;
 import com.google.k2.internal.messages.DestinationMessage;
-import com.google.k2.internal.messages.PlaintextReadable;
+import com.google.k2.internal.messages.PlaintextSourceMessage;
 import com.google.k2.internal.messages.SourceMessage;
 import com.google.k2.internal.messages.WrappedDataFormat;
 import com.google.k2.internal.primitives.Operation;
@@ -301,12 +301,12 @@ public class Wrapper {
 
   // Utility to get a readable InternalMessage from a byte array
   private SourceMessage byteArrayReadable(byte[] source) {
-    return new PlaintextReadable(source);
+    return new PlaintextSourceMessage(source);
   }
 
   // Utility to get a readable InternalMessage from an InputStream
   private SourceMessage streamReadable(InputStream source) {
-    return new PlaintextReadable(source);
+    return new PlaintextSourceMessage(source);
   }
 
   // Utility pass written data through the wrappedDataFormat to a byte array

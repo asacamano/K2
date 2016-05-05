@@ -30,14 +30,25 @@ import java.util.List;
  * <p>Note that - following the TestWrappedDataFormat - all fixed bytes fields are hex encoded,
  * and all variable byte fields are just kept as strings (UTF_8 encoded).
  */
-public class TestPreparsedReadable implements SourceMessage {
+public class TestFixedLengthSourceMessage implements SourceMessage {
 
   private final Iterator<Object> objects;
   private final Iterator<MessageField> fields;
+  private final int messageFormatVersion;
 
-  public TestPreparsedReadable(List<Object> objects, List<MessageField> fields) {
+  public TestFixedLengthSourceMessage(List<Object> objects, List<MessageField> fields,
+      int messageFormatVersion) {
     this.objects = objects.iterator();
     this.fields = fields.iterator();
+    // Skip over the version
+    this.fields.next();
+    this.objects.next();
+    this.messageFormatVersion = messageFormatVersion;
+  }
+
+  @Override
+  public int getMessageFormatVersion() {
+    return messageFormatVersion;
   }
 
   @Override
