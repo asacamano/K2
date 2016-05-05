@@ -9,11 +9,8 @@ import com.google.k2.internal.messages.Writable;
 import com.google.k2.internal.primitives.SymmetricCryptPrimitive;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class TestSymmetricCryptPrimitive implements SymmetricCryptPrimitive {
-
-  private static AtomicLong iv = new AtomicLong();
 
   @Override
   public void crypt(SymmetricCryptKey key, byte[] iv, Readable input, Writable output)
@@ -60,7 +57,7 @@ public class TestSymmetricCryptPrimitive implements SymmetricCryptPrimitive {
 
   @Override
   public byte[] generateNewIv(SymmetricCryptKey key) {
-    return ByteBuffer.allocate(16).putLong(iv.getAndIncrement()).array();
+    return ByteBuffer.allocate(16).putLong(0).putLong(0).array();
   }
 
 }
