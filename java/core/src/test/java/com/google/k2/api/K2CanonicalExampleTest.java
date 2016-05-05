@@ -15,10 +15,6 @@ package com.google.k2.api;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.k2.api.K2;
-import com.google.k2.api.SecurityProperty;
-import com.google.k2.api.Unwrapper;
-import com.google.k2.api.Wrapper;
 import com.google.k2.api.exceptions.K2Exception;
 import com.google.k2.internal.common.Util;
 import com.google.k2.testimpls.TestCryptoGuidelines;
@@ -30,12 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * This class tests the canonical K2 examples.
- *
  */
 public class K2CanonicalExampleTest {
 
@@ -82,7 +76,6 @@ public class K2CanonicalExampleTest {
   }
 
   @Test
-  @Ignore // this functionality is not yet implemented for the TestWrappedDataFormat code
   public void testNaiveEncryptAndDecrypt_streamData() throws K2Exception {
     // Get a wrapper and an unwrapper
     Wrapper encrypter = k2.getWrapper(TestKeyStorage.SYM_KEY_ID, SecurityProperty.CONFIDENTIALITY);
@@ -98,7 +91,6 @@ public class K2CanonicalExampleTest {
 
     // Test the results of the (quite fake) encryption
     assertEquals(EXPECTED_CIPHERTEXT, new String(desinationCiphertext.toByteArray(), Util.UTF_8));
-
 
     ByteArrayInputStream sourceCiphertext =
         new ByteArrayInputStream(desinationCiphertext.toByteArray());
