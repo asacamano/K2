@@ -88,7 +88,7 @@ public enum SecurityProperty {
 
   /**
    * Guarantees that a hash function is hard to implement in ASIC hardware, making it difficult to
-   * use bit-coin farming machery to attack the hash.
+   * use bit-coin farming machinery to attack the hash.
    */
   HARDWARE_OPTIMIZATION_RESISTANCE,
 
