@@ -13,8 +13,6 @@
  */
 package com.google.k2.internal.common;
 
-import com.google.k2.api.SecurityProperty;
-
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashSet;
@@ -58,14 +56,15 @@ public class Util {
   }
 
   /**
-   * Converts an array or varags of {@link SecurityProperty}s to an unmodifiable set.
-   * @param properties The properties to add to the set
-   * @return An unmodifiable set containing all the properties
+   * Converts an array or varags to an unmodifiable set.
+   *
+   * @param elements The elements to add to the set
+   * @return An unmodifiable set containing all the elements
    */
-  public static Set<SecurityProperty> arrayToSet(SecurityProperty... properties) {
-    Set<SecurityProperty> base = new HashSet<SecurityProperty>();
-    for (SecurityProperty property : properties) {
-      base.add(property);
+  public static <T> Set<T> arrayToSet(T... elements) {
+    Set<T> base = new HashSet<T>();
+    for (T element : elements) {
+      base.add(element);
     }
     return Collections.unmodifiableSet(base);
   }
