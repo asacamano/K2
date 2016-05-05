@@ -13,7 +13,11 @@
  */
 package com.google.k2.internal.keys;
 
+import com.google.k2.api.KeyPurpose;
 import com.google.k2.internal.common.Util;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class represents a plain symmetric crypting key - plain in that does not do any kind of
@@ -23,11 +27,12 @@ public class PlainSymmetricKeyImpl implements SymmetricCryptKey {
 
   private final String id;
   private final byte[] keyMaterial;
+  private final Set<KeyPurpose> keyPurposes;
 
-
-  public PlainSymmetricKeyImpl(String id, byte[] keyMaterial) {
+  public PlainSymmetricKeyImpl(String id, byte[] keyMaterial, Set<KeyPurpose> keyPurposes) {
     this.id = Util.checkNotNullOrEmpty(id, "id");
     Util.checkNotNull(keyMaterial, "keyMaterial");
+    this.keyPurposes = Collections.unmodifiableSet(Util.checkNotNull(keyPurposes, "keyPurposes"));
     // Prevent shenanigans - cheap peace(ish) of mind
     this.keyMaterial = new byte[keyMaterial.length];
     System.arraycopy(keyMaterial, 0, this.keyMaterial, 0, keyMaterial.length);
@@ -36,6 +41,11 @@ public class PlainSymmetricKeyImpl implements SymmetricCryptKey {
   @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public Set<KeyPurpose> getKeyPurposes() {
+    return keyPurposes;
   }
 
   @Override

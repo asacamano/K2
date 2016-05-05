@@ -13,6 +13,8 @@
  */
 package com.google.k2.api;
 
+import java.util.Set;
+
 /**
  * The highest level of abstract around a cryptographic key.
  *
@@ -28,4 +30,9 @@ public interface Key {
    * @return the ID that can be used to find this key.
    */
   String getId();
+
+  /**
+   * Returns the purposes for this key.
+   */
+  Set<KeyPurpose> getKeyPurposes();
 }

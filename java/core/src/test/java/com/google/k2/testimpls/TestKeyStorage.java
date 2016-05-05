@@ -14,9 +14,11 @@
 package com.google.k2.testimpls;
 
 import com.google.k2.api.Key;
+import com.google.k2.api.KeyPurpose;
 import com.google.k2.api.KeyStorage;
 import com.google.k2.api.exceptions.NoSuchKeyException;
 import com.google.k2.internal.common.K2Objects;
+import com.google.k2.internal.common.Util;
 import com.google.k2.internal.keys.PlainSymmetricKeyImpl;
 
 /**
@@ -39,7 +41,7 @@ public class TestKeyStorage implements KeyStorage {
   @Override
   public Key getKey(String keyId) throws NoSuchKeyException {
     if (SYM_KEY_ID.equals(keyId)) {
-      return new PlainSymmetricKeyImpl(SYM_KEY_ID, SYM_KEY);
+      return new PlainSymmetricKeyImpl(SYM_KEY_ID, SYM_KEY, Util.arrayToSet(KeyPurpose.DECRYPT, KeyPurpose.ENCRYPT));
     }
     throw new NoSuchKeyException("No key found with ID \"" + keyId + "\"");
   }

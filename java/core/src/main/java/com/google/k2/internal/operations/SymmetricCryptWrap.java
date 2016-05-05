@@ -14,6 +14,7 @@
 package com.google.k2.internal.operations;
 
 import com.google.k2.api.Key;
+import com.google.k2.api.KeyPurpose;
 import com.google.k2.api.SecurityProperty;
 import com.google.k2.api.exceptions.CantReadException;
 import com.google.k2.api.exceptions.CantWriteException;
@@ -69,7 +70,8 @@ public class SymmetricCryptWrap implements Operation {
 
   @Override
   public boolean canUseKey(Key key) {
-    return key instanceof SymmetricCryptKey;
+    return key instanceof SymmetricCryptKey
+        && key.getKeyPurposes().contains(KeyPurpose.ENCRYPT);
   }
 
 
