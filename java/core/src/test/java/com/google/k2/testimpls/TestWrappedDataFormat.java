@@ -46,14 +46,14 @@ public class TestWrappedDataFormat implements WrappedDataFormat {
       Key key) {
     // Note that writing for this format is simple - we just write the data, we don't need the
     // operation to define the structure
-    return new TestStreamingInternalWritable(destination);
+    return new TestStreamingDestinationMessage(destination);
   }
 
   @Override
   public DestinationMessage getWritableMessage(byte[] destination, Operation operation, Key key) {
     // Note that writing for this format is simple - we just write the data, we don't need the
     // operation to define the structure
-    return new TestByteArrayInternalWritable(destination);
+    return new TestFixedLengthDestinationMessage(destination);
   }
 
   @Override
@@ -62,15 +62,18 @@ public class TestWrappedDataFormat implements WrappedDataFormat {
     // Step 1, read the version - so we know which version to get the rest of the structure from
     // don't worry about more than 255 version in the test context (ROFL)
     try {
-      int version = source.read();
+      int version = source.read() - '0';
       List<MessageField> structure = operation.getMessageStructure(version, key);
+      char delim = (char)source.read();
+      if (delim != '|') {
+        throw new CantReadException("Invaild source missing first '|' delimiter");
+      }
+      return new TestStreamingSourceMessage(source, structure, version);
     } catch (IOException e) {
       throw new CantReadException("Can't read from the intput stream", e);
     } catch (NoSuchMessageVersionException e) {
       throw new CantReadException("Message parse error", e);
     }
-
-    return null;
   }
 
   @Override
@@ -115,6 +118,6 @@ public class TestWrappedDataFormat implements WrappedDataFormat {
       }
     }
 
-    return new TestPreparsedReadable(objects, structure);
+    return new TestFixedLengthSourceMessage(objects, structure, version);
   }
 }
