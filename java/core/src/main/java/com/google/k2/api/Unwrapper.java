@@ -20,7 +20,7 @@ import com.google.k2.api.exceptions.InvalidKeyException;
 import com.google.k2.api.exceptions.UnimplementedPrimitiveException;
 import com.google.k2.internal.common.Util;
 import com.google.k2.internal.messages.DestinationMessage;
-import com.google.k2.internal.messages.PlaintextWritable;
+import com.google.k2.internal.messages.PlaintextDestinationMessage;
 import com.google.k2.internal.messages.SourceMessage;
 import com.google.k2.internal.messages.WrappedDataFormat;
 import com.google.k2.internal.primitives.Operation;
@@ -317,11 +317,11 @@ public class Unwrapper {
 
   // Utility get a writable InputMessage that writes to a byte array
   private DestinationMessage byteArrayWritable(byte[] destination) {
-    return new PlaintextWritable(destination);
+    return new PlaintextDestinationMessage(destination);
   }
 
   // Utility get a writable InputMessage that writes to an OutputStream
   private DestinationMessage streamWritable(OutputStream destination) {
-    return new PlaintextWritable(destination);
+    return new PlaintextDestinationMessage(destination);
   }
 }

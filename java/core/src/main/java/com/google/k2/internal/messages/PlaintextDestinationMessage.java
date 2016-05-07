@@ -23,18 +23,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * A PlaintextWritable is a common {@link DestinationMessage} that just handles one field, a plaintext
  * field.
  */
-public class PlaintextWritable implements DestinationMessage {
+public class PlaintextDestinationMessage implements DestinationMessage {
 
   private final OutputStream destinationStream;
   private final byte[] destinationBytes;
   private final AtomicBoolean moreToDo = new AtomicBoolean(true);
 
-  public PlaintextWritable(byte[] destination) {
+  public PlaintextDestinationMessage(byte[] destination) {
     destinationStream = null;
     destinationBytes = Util.checkNotNull(destination, "destination");
   }
 
-  public PlaintextWritable(OutputStream destination) {
+  public PlaintextDestinationMessage(OutputStream destination) {
     destinationStream = Util.checkNotNull(destination, "destination");
     destinationBytes = null;
   }
