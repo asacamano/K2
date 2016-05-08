@@ -73,6 +73,9 @@ public class CoreOperationFactory implements OperationFactory {
     // TODO(asacamano@gmail.com) Make this more elegant
     if (properties.size() == 1 && properties.contains(SecurityProperty.CONFIDENTIALITY)) {
       return new SymmetricCryptWrap(k2Objects);
+    } else if (properties.size() == 2 && properties.contains(SecurityProperty.CONFIDENTIALITY)
+        && properties.contains(SecurityProperty.SOURCE_AUTHENTICITY)) {
+        return new SymmetricCryptAndHmacWrap(k2Objects);
     } else {
       throw new NoSuchOperationException("No operation can provide " + properties);
     }
@@ -84,6 +87,9 @@ public class CoreOperationFactory implements OperationFactory {
     // TODO(asacamano@gmail.com) Make this more elegant
     if (properties.size() == 1 && properties.contains(SecurityProperty.CONFIDENTIALITY)) {
       return new SymmetricCryptUnwrap(k2Objects);
+    } else if (properties.size() == 2 && properties.contains(SecurityProperty.CONFIDENTIALITY)
+        && properties.contains(SecurityProperty.SOURCE_AUTHENTICITY)) {
+        return new SymmetricCryptAndHmacUnwrap(k2Objects);
     } else {
       throw new NoSuchOperationException("No operation can provide " + properties);
     }
