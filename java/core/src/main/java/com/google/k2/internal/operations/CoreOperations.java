@@ -32,4 +32,14 @@ public enum CoreOperations implements K2Id {
    * A bare bones symmetric decryption without MAC.
    */
   SYMMETRIC_CRYPT_UNWRAP,
+
+  /**
+   * Symmetric encryption with an HMAC.
+   */
+  SYMMETRIC_CRYPT_AND_HMAC_WRAP,
+
+  /**
+   * Symmetric decryption that also validates an HMAC.
+   */
+  SYMMETRIC_CRYPT_AND_HMAC_UNWRAP,
 }
