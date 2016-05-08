@@ -11,26 +11,28 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.k2.testimpls;
-
-import javax.xml.bind.DatatypeConverter;
+package com.google.k2.api.exceptions;
 
 /**
- * Some utilities for test cases.
+ * This exception is thrown when a message authentication operation fails - such as a signature
+ * or HMAC verification.
  */
-public class TestUtil {
+public class MessageAuthenticationException extends K2Exception {
+  private static final long serialVersionUID = 1L;
 
-  /**
-   * Convert a string of hex into a byte array.
-   */
-  public static byte[] hexToByteArray(String hex) {
-    return DatatypeConverter.parseHexBinary(hex);
+  public MessageAuthenticationException() {
+    super();
   }
 
-  /**
-   * Convert a byte array into a string of hex.
-   */
-  public static String byteArrayToHex(byte[] bytes) {
-    return DatatypeConverter.printHexBinary(bytes);
+  public MessageAuthenticationException(String arg0, Throwable arg1) {
+    super(arg0, arg1);
+  }
+
+  public MessageAuthenticationException(String arg0) {
+    super(arg0);
+  }
+
+  public MessageAuthenticationException(Throwable arg0) {
+    super(arg0);
   }
 }

@@ -17,6 +17,7 @@ import com.google.k2.api.Key;
 import com.google.k2.api.SecurityProperty;
 import com.google.k2.api.exceptions.CantReadException;
 import com.google.k2.api.exceptions.CantWriteException;
+import com.google.k2.api.exceptions.MessageAuthenticationException;
 import com.google.k2.api.exceptions.NoSuchMessageVersionException;
 import com.google.k2.api.exceptions.UnimplementedPrimitiveException;
 import com.google.k2.internal.common.K2Id;
@@ -108,7 +109,9 @@ public interface Operation {
    * @throws CantWriteException if there are errors writing to the output
    * @throws UnimplementedPrimitiveException if a {@link Primitive} required by this Operation is
    * not available.
+   * @throws MessageAuthenticationException if there were problems verifying the message
    */
   public void perform(Key key, SourceMessage input, DestinationMessage output)
-      throws CantReadException, CantWriteException, UnimplementedPrimitiveException;
+      throws CantReadException, CantWriteException, UnimplementedPrimitiveException,
+      MessageAuthenticationException;
 }

@@ -17,6 +17,7 @@ import com.google.k2.api.exceptions.CantReadException;
 import com.google.k2.api.exceptions.CantWriteException;
 import com.google.k2.api.exceptions.InsufficientSecurityException;
 import com.google.k2.api.exceptions.InvalidKeyException;
+import com.google.k2.api.exceptions.MessageAuthenticationException;
 import com.google.k2.api.exceptions.UnimplementedPrimitiveException;
 import com.google.k2.internal.common.Util;
 import com.google.k2.internal.messages.DestinationMessage;
@@ -62,9 +63,10 @@ public class Unwrapper {
    * @throws CantWriteException if there are problems creating the destination byte array
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
-  public byte[] unwrap(byte[] input)
-      throws InvalidKeyException, CantWriteException, UnimplementedPrimitiveException {
+  public byte[] unwrap(byte[] input) throws InvalidKeyException, CantWriteException,
+  UnimplementedPrimitiveException, MessageAuthenticationException {
     ByteArrayOutputStream destination = new ByteArrayOutputStream();
     try {
       unwrap(byteArrayReadable(input), streamWritable(destination));
@@ -90,9 +92,10 @@ public class Unwrapper {
    * large enough
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
-  public void unwrap(byte[] input, byte[] output)
-      throws InvalidKeyException, CantWriteException, UnimplementedPrimitiveException {
+  public void unwrap(byte[] input, byte[] output) throws InvalidKeyException, CantWriteException,
+  UnimplementedPrimitiveException, MessageAuthenticationException {
     try {
       unwrap(byteArrayReadable(input), byteArrayWritable(output));
     } catch (InsufficientSecurityException e) {
@@ -114,9 +117,11 @@ public class Unwrapper {
    * @throws CantReadException if there are problems reading from the input
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public void unwrap(InputStream input, OutputStream output) throws InvalidKeyException,
-      CantReadException, CantWriteException, UnimplementedPrimitiveException {
+      CantReadException, CantWriteException, UnimplementedPrimitiveException,
+      MessageAuthenticationException {
     try {
       unwrap(streamReadable(input), streamWritable(output));
     } catch (InsufficientSecurityException e) {
@@ -140,10 +145,11 @@ public class Unwrapper {
    * @throws CantWriteException if there are problems creating the destination byte array
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public byte[] unwrap(byte[] input, SecurityProperty... securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantWriteException,
-      UnimplementedPrimitiveException {
+      UnimplementedPrimitiveException, MessageAuthenticationException {
     ByteArrayOutputStream destination = new ByteArrayOutputStream();
     try {
       unwrap(byteArrayReadable(input), streamWritable(destination), securityProperties);
@@ -171,10 +177,11 @@ public class Unwrapper {
    * large enough
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public void unwrap(byte[] input, byte[] output, SecurityProperty... securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantWriteException,
-      UnimplementedPrimitiveException {
+      UnimplementedPrimitiveException, MessageAuthenticationException {
     try {
       unwrap(byteArrayReadable(input), byteArrayWritable(output), securityProperties);
     } catch (CantReadException e) {
@@ -200,10 +207,11 @@ public class Unwrapper {
    * @throws CantReadException if there are problems reading from the input
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public void unwrap(InputStream input, OutputStream output, SecurityProperty... securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantWriteException,
-      CantReadException, UnimplementedPrimitiveException {
+      CantReadException, UnimplementedPrimitiveException, MessageAuthenticationException {
     unwrap(streamReadable(input), streamWritable(output), securityProperties);
   }
 
@@ -224,10 +232,11 @@ public class Unwrapper {
    * byte array
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public byte[] unwrap(byte[] input, SecurityPropertySet securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantWriteException,
-      UnimplementedPrimitiveException {
+      UnimplementedPrimitiveException, MessageAuthenticationException {
     ByteArrayOutputStream destination = new ByteArrayOutputStream();
     try {
       unwrap(byteArrayReadable(input), streamWritable(destination),
@@ -256,10 +265,11 @@ public class Unwrapper {
    * large enough
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public void unwrap(byte[] input, byte[] output, SecurityPropertySet securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantWriteException,
-      UnimplementedPrimitiveException {
+      UnimplementedPrimitiveException, MessageAuthenticationException {
     try {
       unwrap(byteArrayReadable(input), byteArrayWritable(output),
           securityProperties.getPropertiesArray());
@@ -286,10 +296,11 @@ public class Unwrapper {
    * @throws CantReadException if there are problems reading from the input
    * @throws UnimplementedPrimitiveException if a required {@link Primitive} is not available in
    * this configuration
+   * @throws MessageAuthenticationException if the message presented bad authentication information
    */
   public void unwrap(InputStream input, OutputStream output, SecurityPropertySet securityProperties)
       throws InvalidKeyException, InsufficientSecurityException, CantReadException,
-      CantWriteException, UnimplementedPrimitiveException {
+      CantWriteException, UnimplementedPrimitiveException, MessageAuthenticationException {
     unwrap(streamReadable(input), streamWritable(output), securityProperties.getPropertiesArray());
   }
 
@@ -298,7 +309,8 @@ public class Unwrapper {
   //
   private void unwrap(SourceMessage input, DestinationMessage output,
       SecurityProperty... properties) throws InsufficientSecurityException, InvalidKeyException,
-      CantReadException, CantWriteException, UnimplementedPrimitiveException {
+      CantReadException, CantWriteException, UnimplementedPrimitiveException,
+      MessageAuthenticationException {
     guidelines.validateOperationAndKey(key, operation, properties);
     operation.perform(key, input, output);
   }

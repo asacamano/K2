@@ -17,6 +17,7 @@ import com.google.k2.api.exceptions.CantReadException;
 import com.google.k2.api.exceptions.CantWriteException;
 import com.google.k2.api.exceptions.InsufficientSecurityException;
 import com.google.k2.api.exceptions.InvalidKeyException;
+import com.google.k2.api.exceptions.MessageAuthenticationException;
 import com.google.k2.api.exceptions.UnimplementedPrimitiveException;
 import com.google.k2.internal.common.Util;
 import com.google.k2.internal.messages.DestinationMessage;
@@ -296,7 +297,12 @@ public class Wrapper {
       throws InsufficientSecurityException, InvalidKeyException, CantReadException,
       CantWriteException, UnimplementedPrimitiveException {
     guidelines.validateOperationAndKey(key, operation, properties);
-    operation.perform(key, input, output);
+    try {
+      operation.perform(key, input, output);
+    } catch (MessageAuthenticationException e) {
+      throw new IllegalStateException(
+          "Shouldn't get MessageAuthenticationException in wrap(). This is a K2 bug", e);
+    }
   }
 
   // Utility to get a readable InternalMessage from a byte array
