@@ -35,6 +35,8 @@ public class TestPrimitiveFactory implements PrimitiveFactory {
   public Primitive makeNewPrimitive(K2Id primitive) throws UnimplementedPrimitiveException {
     if (primitive.equals(CorePrimitives.SYMMETRIC_CRYPT)) {
       return new TestSymmetricCryptPrimitive();
+    } else if (primitive.equals(CorePrimitives.KEYED_HASH)) {
+      return new TestKeyedHashPrimitive();
     } else {
       throw new UnimplementedPrimitiveException(
           "TestPrimitiveFactory does not implement " + primitive);

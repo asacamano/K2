@@ -22,8 +22,11 @@ import com.google.k2.internal.common.K2Id;
 //smarter people than me
 public enum CorePrimitives implements K2Id {
   /**
-   * A bare bones symmetric crypt primitive - does both encryption and decryption, with an IV,
-   * but without a MAC.
+   * A bare bones symmetric crypt primitive - does both encryption and decryption, with an IV
    */
   SYMMETRIC_CRYPT,
+  /**
+   * A bare bones keyed hash primitive
+   */
+  KEYED_HASH,
 }
