@@ -20,6 +20,7 @@ import com.google.k2.api.exceptions.NoSuchKeyException;
 import com.google.k2.internal.common.K2Objects;
 import com.google.k2.internal.common.Util;
 import com.google.k2.internal.keys.PlainSymmetricKeyImpl;
+import com.google.k2.internal.keys.SymmetricHmacKeyImpl;
 
 /**
  * A {@link KeyStorage} for use in tests.
@@ -32,6 +33,10 @@ public class TestKeyStorage implements KeyStorage {
   public static final String SYM_KEY_ID = "SYM_KEY_1";
   public static final byte[] SYM_KEY = TestUtil.hexToByteArray("00112233445566778899AABBCCDDEEFF");
 
+  public static final String SYM_HMAC_KEY_ID = "SYM_HMAC_KEY_1";
+  public static final byte[] SYM_HMAC_KEY =
+      TestUtil.hexToByteArray("00112233445566778899AABBCCDDEEFF");
+
 
   @Override
   public void setK2Objects(K2Objects k2Objects) {
@@ -41,7 +46,11 @@ public class TestKeyStorage implements KeyStorage {
   @Override
   public Key getKey(String keyId) throws NoSuchKeyException {
     if (SYM_KEY_ID.equals(keyId)) {
-      return new PlainSymmetricKeyImpl(SYM_KEY_ID, SYM_KEY, Util.arrayToSet(KeyPurpose.DECRYPT, KeyPurpose.ENCRYPT));
+      return new PlainSymmetricKeyImpl(
+          SYM_KEY_ID, SYM_KEY, Util.arrayToSet(KeyPurpose.DECRYPT, KeyPurpose.ENCRYPT));
+    } else if (SYM_HMAC_KEY_ID.equals(keyId)) {
+        return new SymmetricHmacKeyImpl(SYM_KEY_ID, SYM_KEY, SYM_HMAC_KEY,
+            Util.arrayToSet(KeyPurpose.DECRYPT, KeyPurpose.ENCRYPT));
     }
     throw new NoSuchKeyException("No key found with ID \"" + keyId + "\"");
   }
